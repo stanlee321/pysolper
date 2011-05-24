@@ -7,28 +7,54 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js">
     </script>
     <script>
-      function login() {
-        alert("TODO openid login");
-      }     
-
       $(function() {
-        $('#login').button()
-        $('#login-form').submit(login);
+        $('#login-button').button()
+        $('#logout-button').button()
       });
     </script>
+    <style>
+      body {
+      width: 950px;
+      border: 5px solid yellow;
+      }
+      .login-box {
+      float: right;
+      background-color: #99c;
+      min-height: 150px;
+      width: 300px;
+      border: 2px solid blue;
+      text-align: center;
+      vertical-align: middle;
+      margin: 10px;
+      padding: 20px;
+      font-size: 20px;
+      }
+      .login-button {
+      margin: 10px;
+      }
+    </style>
   </head>
   <body>
     <h1>Welcome to Solar Permitting for {{ jurisdiction|e }}</h1>
 
-    <div id="login-box">
+    {% if user %}
+    <div class="login-box" id="login-complete">
+      <p>
+	You are logged in as {{ user|e }}
+      </p>
+      <p>
+	<a id="logout-button" href="?logout=1">Logout</a>
+    </div>
+    {% else %}
+    <div class="login-box" id="login-form">
       Sign in with your
       <br/>
       <strong>Email Address:</strong>
       <form id="login-form">
 	<input name="email" type="text" size="30" />
-	<br/>
-	<input type="submit" id="login" value="Continue" />
+	<input type="submit" id="login-button" value="Continue" />
       </form>
     </div>
+    {% endif %}
   </body>
 </html>
