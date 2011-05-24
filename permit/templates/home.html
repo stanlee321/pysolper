@@ -15,7 +15,6 @@
         $('.button').button()
         $('#login-form').submit(function() {
           var input = $('#login-email').val();
-          alert('input: ' + input);
           if (emailPattern.test(input)) {
             return true;
           } else {
@@ -115,7 +114,7 @@
     </div>
     {% endif %}
 
-    {% if user.role == "Integrator" %}
+    {% if user.role == "Applicant" %}
     <div id="start-new-project">
       <a href="#" id="start-new-project-button" class="button">
 	Start a new Project
@@ -162,7 +161,7 @@
 	      Pending Approval by City of Light
 	    </td>
 	    <td>
-	      Submitted by Integrator
+	      Submitted by 
 	    </td>
 	    <td>
 	      July 4, 2011

@@ -35,7 +35,7 @@ class HomeHandler(RequestHandler, Jinja2Mixin):
                 email = self.session.get('email', None) 
                 
         if email:
-            user = models.User.all().filter('email = ', email).get()
+            user = models.User.get_by_email(email)
             if not user:
                 user = models.User(email=email)
                 user.put()
