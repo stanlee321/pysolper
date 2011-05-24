@@ -3,6 +3,6 @@
 from tipfy.routing import Rule
 
 rules = [
-    Rule('/', name='hello-integrator', handler='integrator.handlers.HelloWorldHandler'),
+    Rule('/', name='home', handler='home.HomeHandler'),
     Rule('/pretty', name='hello-world-pretty', handler='integrator.handlers.PrettyHelloWorldHandler'),
 ]

@@ -1,0 +1,34 @@
+<html>
+  <head>
+    <title>Solar Permitting for {{ jurisdiction|e }}</title>
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/themes/sunny/jquery-ui.css" type="text/css" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js">
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js">
+    </script>
+    <script>
+      function login() {
+        alert("TODO openid login");
+      }     
+
+      $(function() {
+        $('#login').button()
+        $('#login-form').submit(login);
+      });
+    </script>
+  </head>
+  <body>
+    <h1>Welcome to Solar Permitting for {{ jurisdiction|e }}</h1>
+
+    <div id="login-box">
+      Sign in with your
+      <br/>
+      <strong>Email Address:</strong>
+      <form id="login-form">
+	<input name="email" type="text" size="30" />
+	<br/>
+	<input type="submit" id="login" value="Continue" />
+      </form>
+    </div>
+  </body>
+</html>
