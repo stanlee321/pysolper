@@ -2,16 +2,17 @@
   <head>
     <title>Solar Permitting for {{ jurisdiction|e }}</title>
     <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/themes/sunny/jquery-ui.css" type="text/css" />
+    <link rel="stylesheet" href="/static/tablesorter.blue/style.css" type="text/css" />
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js">
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js">
     </script>
+    <script src="/static/jquery.tablesorter.min.js">
+    </script>
     <script>
       var emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
       $(function() {
-        $('#login-button').button()
-        $('#logout-button').button()
-        $('#choose-role-button').button()
+        $('.button').button()
         $('#login-form').submit(function() {
           var input = $('#login-email').val();
           alert('input: ' + input);
@@ -22,12 +23,14 @@
             return false;
           }
         });
+        $('table.tablesorter').tablesorter({headers: {5: {sorter: false}}});
       });
     </script>
     <style>
       body {
       width: 950px;
       border: 5px solid yellow;
+      font-size: 1.2em;
       }
       #email-input-error {
       display: none;
@@ -40,13 +43,25 @@
       float: right;
       background-color: #ddf;
       min-height: 150px;
-      width: 300px;
+      min-width: 250px;
       border: 2px solid blue;
       text-align: center;
       vertical-align: middle;
       margin: 10px;
       padding: 20px;
       font-size: 20px;
+      }
+      .list-panel {
+      border: 1px solid #ccc;
+      margin: 10px;
+      padding: 10px;
+      width: 500px;
+      }
+      table.tablesorter thead th.header {
+      padding-right: 20px;
+      }
+      table.tablesorter {
+      font-size: 0.8em;
       }
       .ui-button {
       margin: 10px;
@@ -66,7 +81,7 @@
 	Your role is {{ user.role|e }}
       </p>
       <p>
-	<a id="logout-button" href="?logout=1">Logout</a>
+	<a class="button" href="?logout=1">Logout</a>
     </div>
     {% else %}
     <div class="login-box" id="login-choose-role">
@@ -81,7 +96,7 @@
 	{% endfor %}
       </select>
       <br/>
-      <input type="submit" id="choose-role-button" value="Continue" />
+      <input type="submit" class="button" value="Continue" />
       </form>
     </div>
     {% endif %}
@@ -95,13 +110,72 @@
 	  Invalid email address, please fix. 
 	</span>
 	<input name="email" id="login-email" type="text" size="30" />
-	<input type="submit" id="login-button" value="Continue" />
+	<input type="submit" class="button" value="Continue" />
       </form>
     </div>
     {% endif %}
 
-    <div id="case-list">
-      
+    {% if user.role == "Integrator" %}
+    <div id="start-new-project">
+      <a href="#" id="start-new-project-button" class="button">
+	Start a new Project
+      </a>
     </div>
+
+    </div>
+    <div id="cases-in-progress" class="list-panel">
+      You have N projects in progress.  
+      The most recently modified ones appear first.
+
+      <table class="tablesorter" id="projects"> 
+	<thead>
+	  <tr>
+	    <th>
+	      Project Name
+	    </th>
+	    <th>
+	      Creation Date
+	    </th>
+	    <th>
+	      Status
+	    </th>
+	    <th>
+	      Latest Action
+	    </th>
+	    <th>
+	      Latest Action Date
+	    </th>
+	    <th>
+	      Edit
+	    </th>
+	  </tr>
+	</thead>
+	<tbody>
+	  <tr>
+	    <td>
+	      123 Elm Street, City of Light
+	    </td>
+	    <td>
+	      April 1, 2011
+	    </td>
+	    <td>
+	      Pending Approval by City of Light
+	    </td>
+	    <td>
+	      Submitted by Integrator
+	    </td>
+	    <td>
+	      July 4, 2011
+	    </td>
+	    <td>
+	      <a href="#TODO" class="button">Edit</a>
+	    </td>
+	  </tr>
+	</tbody>
+      </table>
+
+      </div>
+    </div>
+    {% endif %}
   </body>
 </html>
