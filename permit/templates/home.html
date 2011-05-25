@@ -1,4 +1,23 @@
 {% extends "base.html" %}
+{% block style %}
+<style>
+#email-input-error {
+display: none;
+}
+.login-box {
+   float: right;
+   background-color: #ddf;
+   min-height: 150px;
+   width: 250px;
+   border: 2px solid blue;
+   text-align: center;
+   vertical-align: middle;
+   margin: 10px;
+   padding: 20px;
+   font-size: 20px;
+}
+</style>
+{% endblock %}
 {% block script %}
 <script>
 var emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
@@ -24,7 +43,7 @@ $(function() {
     {% if not user.role %}
     <div class="login-box" id="login-choose-role">
       <p>
-	You are logged in as <strong>{{ user.email|e }}</strong> 
+	You are logged in as <strong>{{ user.email|e }}</strong>
 	but your registration will be complete once you choose a role.
       </p>
       <form>
@@ -45,119 +64,119 @@ $(function() {
       <strong>Email Address:</strong>
       <form id="login-form" action="">
 	<span id="email-input-error" class="error">
-	  Invalid email address, please fix. 
+	  Invalid email address, please fix.
 	</span>
 	<input name="email" id="login-email" type="text" size="30" />
 	<input type="submit" class="button" value="Continue" />
       </form>
     </div>
     {% endif %}
-    
+
 <div>
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
-content content 
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
+content content
 
 </div>
 
