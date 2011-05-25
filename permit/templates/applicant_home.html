@@ -3,7 +3,14 @@
 <script>
   $(function() {
     $('.button').button();
-    $('table.tablesorter').tablesorter({headers: {5: {sorter: false}}});
+    $('table.tablesorter').tablesorter({
+      debug: true, 
+      headers: {
+        4: {sorter: 'text'},
+        5: {sorter: false}
+      },
+      sortList: [[4, 1]]
+    });
   });
 </script>
 {% endblock %}
@@ -42,7 +49,6 @@
 	  Latest Action Time
 	</th>
 	<th>
-	  Edit
 	</th>
       </tr>
     </thead>
@@ -65,10 +71,20 @@
 	  <span class="tablesorthack">
 	    {{ case.latest_action.timestamp.isoformat()|e }}
 	  </span>
-	  {{ case.latest_action.timestamp.strftime('%d %b, %Y %H:%M')|e }}
+	  {% if case.last_modified.days == 0 %}
+	  {% if case.last_modified.seconds < 7200 %}
+	  {{ case.last_modified.seconds // 60 }} minutes ago 
+	  {% else %}
+	  {{ case.last_modified.seconds // 3600 }} hours ago 
+	  {% endif %}				     
+	  {% elif case.last_modified.days == 1 %}
+	  {{ case.last_modified.days|e }} one day ago
+	  {% else %}
+	  {{ case.last_modified.days|e }} days ago
+	  {% endif %}
 	</td>
 	<td>
-	  <a href="#TODO" class="button">Edit</a>
+	  <a href="#TODO" class="button">Details</a>
 	</td>
       </tr>
       {% endfor %}

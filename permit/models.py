@@ -9,6 +9,7 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 
+import datetime 
 from google.appengine.ext import db
 from google.appengine.ext import blobstore
 
@@ -58,7 +59,8 @@ class Case(db.Model):
 
     @property
     def last_modified(self):
-        return self.latest_action.timestamp
+        delta = datetime.datetime.now() - self.latest_action.timestamp 
+        return delta
 
 
 class CaseAction(db.Model):
