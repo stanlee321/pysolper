@@ -4,7 +4,6 @@
   $(function() {
     $('.button').button();
     $('table.tablesorter').tablesorter({
-      debug: true, 
       headers: {
         4: {sorter: 'text'},
         5: {sorter: false}
@@ -17,7 +16,7 @@
 
 {% block content %}
     <h1>Welcome to Solar Permitting for {{ main.jurisdiction|e }}</h1>
-    
+
     <p>
 
 <div id="start-new-case">
@@ -27,10 +26,10 @@
 </div>
 
 <div id="cases-in-progress" class="list-panel">
-  You have {{ cases|length }} cases.  
-  
+  You have {{ cases|length }} cases.
+
   {% if cases %}
-  <table class="tablesorter" id="cases"> 
+  <table class="tablesorter" id="cases">
     <thead>
       <tr>
 	<th>
@@ -73,10 +72,10 @@
 	  </span>
 	  {% if case.last_modified.days == 0 %}
 	  {% if case.last_modified.seconds < 7200 %}
-	  {{ case.last_modified.seconds // 60 }} minutes ago 
+	  {{ case.last_modified.seconds // 60 }} minutes ago
 	  {% else %}
-	  {{ case.last_modified.seconds // 3600 }} hours ago 
-	  {% endif %}				     
+	  {{ case.last_modified.seconds // 3600 }} hours ago
+	  {% endif %}
 	  {% elif case.last_modified.days == 1 %}
 	  {{ case.last_modified.days|e }} one day ago
 	  {% else %}
