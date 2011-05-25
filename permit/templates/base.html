@@ -1,0 +1,84 @@
+<html>
+  <head>
+    <title>Solar Permitting for {{ main.jurisdiction|e }}</title>
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/themes/sunny/jquery-ui.css" type="text/css" />
+    <link rel="stylesheet" href="/static/tablesorter.blue/style.css" type="text/css" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js">
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js">
+    </script>
+    <script src="/static/jquery.tablesorter.min.js">
+    </script>
+    {% block script %}
+    {% endblock %}
+    <style>
+      body {
+      width: 950px;
+      border: 5px solid yellow;
+      font-size: 1.2em;
+      }
+      div.header,
+      div.footer {
+      width: 100%;
+      text-align: right;
+      padding: 4px;
+      }
+      div.content {
+      min-height: 90%;
+      }
+      #email-input-error {
+      display: none;
+      }
+      .error {
+      font-size: smaller;
+      color: red;
+      }
+      .login-box {
+      float: right;
+      background-color: #ddf;
+      min-height: 150px;
+      min-width: 250px;
+      border: 2px solid blue;
+      text-align: center;
+      vertical-align: middle;
+      margin: 10px;
+      padding: 20px;
+      font-size: 20px;
+      }
+      .list-panel {
+      border: 1px solid #ccc;
+      margin: 10px;
+      padding: 10px;
+      width: 90%;
+      }
+      table.tablesorter thead th.header {
+      padding-right: 20px;
+      }
+      table.tablesorter {
+      font-size: 0.8em;
+      }
+      .ui-button {
+      margin: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <span class="login-info">
+	{{ user.email|e }}
+	| 
+	{{ user.role|e }}
+	| 
+	<a href="/?logout=1">Logout</a>
+      </span>
+    </div>
+    <div class="content">
+    {% block content %}
+    Oops!! need to override content block in base template.
+    {% endblock %}
+    </div>
+    <div class="footer">
+    &copy; Copyright 2011 Google, Inc.
+    </div>
+  </body>
+</html>

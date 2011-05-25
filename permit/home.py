@@ -50,6 +50,9 @@ class HomeHandler(RequestHandler, Jinja2Mixin):
                 user.role = role
                 user.put()
 
+            if user.role == 'Applicant':
+                return self.redirect('/applicant/home')
+
         context = {
             'user': user, 
             'roles': models.USER_ROLES,

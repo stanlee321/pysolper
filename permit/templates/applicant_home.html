@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block script %}
+<script>
+  $(function() {
+    $('.button').button();
+    $('table.tablesorter').tablesorter({headers: {5: {sorter: false}}});
+  });
+</script>
+{% endblock %}
+
+{% block content %}
+    <h1>Welcome to Solar Permitting for {{ main.jurisdiction|e }}</h1>
+    
+    <p>
+
+<div id="start-new-case">
+  <a href="/case/new" id="start-new-case-button" class="button">
+    Start a new Case
+  </a>
+</div>
+
+<div id="cases-in-progress" class="list-panel">
+  You have N cases in progress.  
+  The most recently modified ones appear first.
+  
+  <table class="tablesorter" id="cases"> 
+    <thead>
+      <tr>
+	<th>
+	  Case Name
+	</th>
+	<th>
+	  Creation Date
+	</th>
+	<th>
+	  Status
+	</th>
+	<th>
+	  Latest Action
+	</th>
+	<th>
+	  Latest Action Date
+	</th>
+	<th>
+	  Edit
+	</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+	<td>
+	  123 Elm Street, City of Light
+	</td>
+	<td>
+	  April 1, 2011
+	</td>
+	<td>
+	  Pending Approval by City of Light
+	</td>
+	<td>
+	  Submitted by 
+	</td>
+	<td>
+	  July 4, 2011
+	</td>
+	<td>
+	  <a href="#TODO" class="button">Edit</a>
+	</td>
+      </tr>
+      <tr>
+	<td>
+	  456 Oak Drive, City of Light
+	</td>
+	<td>
+	  April 3, 2011
+	</td>
+	<td>
+	  Approved by City of Light
+	</td>
+	<td>
+	  Approved by City
+	</td>
+	<td>
+	  July 5, 2011
+	</td>
+	<td>
+	  <a href="#TODO" class="button">Edit</a>
+	</td>
+      </tr>
+    </tbody>
+  </table>
+  
+</div>
+{% endblock %}
