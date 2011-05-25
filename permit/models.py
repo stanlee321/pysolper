@@ -19,7 +19,7 @@ USER_ROLES = ('Permit Approver', 'Applicant', 'Spectator')
 # of the state string will be stripped before display.
 CASE_STATES = ('00 Incomplete', '10 Submitted',
                '20 Commented', '30 Approved', '40 Denied')
-CASE_ACTIONS = ('Create', 'Update', 'Upload',
+CASE_ACTIONS = ('Create', 'Update',
                 'Submit', 'Comment', 'Approve', 'Deny')
 
 
@@ -89,6 +89,10 @@ class CaseAction(db.Model):
     @classmethod
     def query_by_case(cls, case):
         return cls.all().filter('case = ', case)
+
+    @classmethod
+    def query_updates_by_case(cls, case):
+        return cls.all().filter('case = ', case).filter('action = ', 'Update')
 
     @classmethod
     def upload_document_action(cls, case, purpose, user, blob_info, notes):

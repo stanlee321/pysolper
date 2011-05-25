@@ -83,11 +83,14 @@ class CaseDetailsHandler(RequestHandler, Jinja2Mixin):
 
         case = models.Case.get_by_id(id)
         actions = models.CaseAction.query_by_case(case).order('-timestamp')
+        documents = models.CaseAction.query_updates_by_case(case)
+	documents = documents.order('-timestamp')
 
         context = {
             'user': user,
             'case': case,
             'actions': actions,
+            'documents': documents,
         }
         context.update(config.config)
 
