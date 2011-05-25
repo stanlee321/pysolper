@@ -4,5 +4,6 @@ from tipfy.routing import Rule
 
 rules = [
     Rule('/', name='home', handler='home.HomeHandler'),
-    Rule('/applicant/home', name='applicant_home', handler='applicant.HomeHandler'),
+    Rule('/applicant/home', handler='applicant.HomeHandler'),
+    Rule('/case/create', handler='applicant.CreateCaseHandler'),
 ]

@@ -12,7 +12,23 @@ indexes:
 
 - kind: Case
   properties:
+  - name: owner
+  - name: state
+
+- kind: Case
+  properties:
+  - name: user
+  - name: state
+
+- kind: Case
+  properties:
   - name: user
   - name: state
   - name: last_modified
+    direction: desc
+
+- kind: CaseAction
+  properties:
+  - name: case
+  - name: timestamp
     direction: desc

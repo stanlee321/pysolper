@@ -32,23 +32,46 @@ class Case(db.Model):
     creation_date = db.DateProperty(required=True, auto_now_add=True)
     owner = db.ReferenceProperty(User, required=True)
     state = db.StringProperty(required=True, choices=CASE_STATES)
-    last_modified = db.DateTimeProperty(required=True, auto_now=True)
     email_listeners = db.StringListProperty()
     
     @classmethod
-    def query_by_user(cls, user ):
+    def query_by_owner(cls, user):
         """Returns a db.Query."""
-        return cls.all().filter('user = ', user)
+        return cls.all().filter('owner = ', user)
+
+    @classmethod
+    def create(cls, owner, **k):
+        case = cls(state=CASE_STATES[0], owner=owner, **k)
+        case.put()
+        first_action = CaseAction(action=CASE_ACTIONS[0], 
+                                  case=case, actor=owner)
+        first_action.put()
+        return case
 
     @property
     def visible_state(self):
         return self.state[3:]
 
+    @property
+    def latest_action(self):
+        return CaseAction.query_by_case(self).order('-timestamp').get()
+
+    @property
+    def last_modified(self):
+        return self.latest_action.timestamp
+
+
 class CaseAction(db.Model):
-    name = db.StringProperty(required=True, choices=CASE_ACTIONS)
-    actor = db.ReferenceProperty(User, required=True)
+    """Immutable once created."""
+    action = db.StringProperty(required=True, choices=CASE_ACTIONS)
     case = db.ReferenceProperty(Case, required=True)
+    actor = db.ReferenceProperty(User, required=True)
+    timestamp = db.DateTimeProperty(auto_now_add=True, required=True)
     notes = db.TextProperty(required=False)
+
+    @classmethod
+    def query_by_case(cls, case):
+        return cls.all().filter('case = ', case)
 
 class Document(db.Model):
     """Going to be immutable once they are created."""
