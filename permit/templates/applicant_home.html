@@ -39,7 +39,7 @@
 	  Latest Action
 	</th>
 	<th>
-	  Latest Action Date
+	  Latest Action Time
 	</th>
 	<th>
 	  Edit
@@ -62,7 +62,10 @@
 	  {{ case.latest_action.action|e }}
 	</td>
 	<td>
-	  {{ case.latest_action.timestamp|e }}
+	  <span class="tablesorthack">
+	    {{ case.latest_action.timestamp.isoformat()|e }}
+	  </span>
+	  {{ case.latest_action.timestamp.strftime('%d %b, %Y %H:%M')|e }}
 	</td>
 	<td>
 	  <a href="#TODO" class="button">Edit</a>
