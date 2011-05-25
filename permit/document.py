@@ -53,7 +53,10 @@ class UploadHandler(RequestHandler, Jinja2Mixin,
 
         case = models.Case.get_by_id(id)
         upload_files = self.get_uploads('file')
-        blob_info = upload_files[0]
+	if upload_files:
+            blob_info = upload_files[0]
+	else:
+	    blob_info = None
 
         models.CaseAction.upload_document_action(
             case,

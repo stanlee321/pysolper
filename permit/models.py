@@ -15,12 +15,13 @@ from google.appengine.ext import blobstore
 import timesince
 
 USER_ROLES = ('Permit Approver', 'Applicant', 'Spectator')
-# These may be ordered lexicographically, the first three characters
-# will be stripped before display.
+# Cases may be ordered lexicographically by state, the first three characters
+# of the state string will be stripped before display.
 CASE_STATES = ('00 Incomplete', '10 Submitted',
                '20 Commented', '30 Approved', '40 Denied')
 CASE_ACTIONS = ('Create', 'Update', 'Upload',
                 'Submit', 'Comment', 'Approve', 'Deny')
+
 
 class User(db.Model):
     email = db.EmailProperty(required=True)
@@ -29,6 +30,7 @@ class User(db.Model):
     @classmethod
     def get_by_email(cls, email):
         return cls.all().filter('email = ', email).get()
+
 
 class Case(db.Model):
     address = db.StringProperty(required=True)
@@ -46,16 +48,16 @@ class Case(db.Model):
     def create(cls, owner, **k):
         case = cls(state=CASE_STATES[0], owner=owner, **k)
         case.put()
-        first_action = CaseAction(action=CASE_ACTIONS[0],
-                                  case=case, actor=owner)
+        first_action = CaseAction(action='Create', case=case, actor=owner)
         first_action.put()
         return case
 
     def submit(self, actor, notes):
-        self.state = '10 Submitted'
+        self.state = CASE_STATES[1]
         self.put()
-        action = CaseAction(action='Submit',
-                            case=self, actor=actor, notes=notes)
+        action = CaseAction(action='Submit', case=self, actor=actor)
+	if notes is not None:
+	    action.notes = notes
         action.put()
 
     @property
@@ -68,8 +70,7 @@ class Case(db.Model):
 
     @property
     def last_modified(self):
-        delta = datetime.datetime.now() - self.latest_action.timestamp
-        return delta
+        return datetime.datetime.now() - self.latest_action.timestamp
 
 
 class CaseAction(db.Model):
@@ -92,9 +93,13 @@ class CaseAction(db.Model):
 
     @classmethod
     def upload_document_action(cls, case, purpose, user, blob_info, notes):
-        action = cls(action='Update', case=case, actor=user, notes=notes,
-                     purpose=purpose, upload=blob_info)
+        action = cls(action='Update', case=case, actor=user)
+	if purpose is not None:
+	    action.purpose = purpose
+	if notes is not None:
+	    action.notes = notes
+	if upload is not None:
+	    action.upload = upload
         action.put()
-
 
 
