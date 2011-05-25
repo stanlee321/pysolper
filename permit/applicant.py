@@ -53,13 +53,14 @@ class CreateCaseHandler(RequestHandler, Jinja2Mixin):
             address = '123 Elm Street',
             )
 
-        return self.redirect('/applicant/home')
+        return self.redirect('/case/details/%s' % case.key().id())
 
 
 class CaseSubmitHandler(RequestHandler, Jinja2Mixin):
     middleware = [SessionMiddleware()]
 
     def post(self, id):
+        """Submit a case for approval."""
         user = models.User.get_by_email(self.session.get('email'))
         if not user:
             return self.redirect('/')
@@ -75,7 +76,7 @@ class CaseDetailsHandler(RequestHandler, Jinja2Mixin):
     middleware = [SessionMiddleware()]
 
     def get(self, id):
-        """Create a new case."""
+        """Show details of a case and allow editing it."""
         user = models.User.get_by_email(self.session.get('email'))
         if not user:
             return self.redirect('/')
