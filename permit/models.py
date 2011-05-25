@@ -18,7 +18,8 @@ USER_ROLES = ('Permit Approver', 'Applicant', 'Spectator')
 # will be stripped before display.
 CASE_STATES = ('00 Incomplete', '10 Submitted',
                '20 Commented', '30 Approved', '40 Denied')
-CASE_ACTIONS = ('Create', 'Update', 'Submit', 'Comment', 'Approve', 'Deny')
+CASE_ACTIONS = ('Create', 'Update', 'Upload',
+                'Submit', 'Comment', 'Approve', 'Deny')
 
 class User(db.Model):
     email = db.EmailProperty(required=True)
@@ -75,21 +76,20 @@ class CaseAction(db.Model):
     action = db.StringProperty(required=True, choices=CASE_ACTIONS)
     case = db.ReferenceProperty(Case, required=True)
     actor = db.ReferenceProperty(User, required=True)
-    timestamp = db.DateTimeProperty(auto_now_add=True, required=True)
+    purpose = db.StringProperty(required=False)
     notes = db.TextProperty(required=False)
+    upload = blobstore.BlobReferenceProperty(required=False)
+    timestamp = db.DateTimeProperty(auto_now_add=True, required=True)
 
     @classmethod
     def query_by_case(cls, case):
         return cls.all().filter('case = ', case)
 
-class Document(db.Model):
-    """Going to be immutable once they are created."""
-    filename = db.StringProperty(required=True)
-    action = db.ReferenceProperty(CaseAction, required=True)
-    uploaded_by = db.ReferenceProperty(User, required=True)
-    uploaded_time = db.DateTimeProperty(required=True, auto_now_add=True)
-    # Either comments or notes or both will be present.
-    contents = blobstore.BlobReferenceProperty(required=False)
-    notes = db.TextProperty(required=False)
+    @classmethod
+    def upload_document_action(cls, case, purpose, user, blob_info, notes):
+        action = cls(action='Update', case=case, actor=user, notes=notes,
+                     purpose=purpose, upload=blob_info)
+        action.put()
+
 
 
