@@ -13,7 +13,10 @@ from google.appengine.ext import db
 from google.appengine.ext import blobstore
 
 USER_ROLES = ('Permit Approver', 'Applicant', 'Spectator')
-CASE_STATES = ('Incomplete', 'Submitted', 'Commented', 'Approved', 'Denied')
+# These may be ordered lexicographically, the first three characters 
+# will be stripped before display. 
+CASE_STATES = ('00 Incomplete', '10 Submitted', 
+               '20 Commented', '30 Approved', '40 Denied')
 CASE_ACTIONS = ('Create', 'Update', 'Submit', 'Comment', 'Approve', 'Deny')
 
 class User(db.Model):
@@ -29,8 +32,18 @@ class Case(db.Model):
     creation_date = db.DateProperty(required=True, auto_now_add=True)
     owner = db.ReferenceProperty(User, required=True)
     state = db.StringProperty(required=True, choices=CASE_STATES)
+    last_modified = db.DateTimeProperty(required=True, auto_now=True)
     email_listeners = db.StringListProperty()
     
+    @classmethod
+    def query_by_user(cls, user ):
+        """Returns a db.Query."""
+        return cls.all().filter('user = ', user)
+
+    @property
+    def visible_state(self):
+        return self.state[3:]
+
 class CaseAction(db.Model):
     name = db.StringProperty(required=True, choices=CASE_ACTIONS)
     actor = db.ReferenceProperty(User, required=True)

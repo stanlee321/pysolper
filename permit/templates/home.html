@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Solar Permitting for {{ jurisdiction|e }}</title>
+    <title>Solar Permitting for {{ main.jurisdiction|e }}</title>
     <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/themes/sunny/jquery-ui.css" type="text/css" />
     <link rel="stylesheet" href="/static/tablesorter.blue/style.css" type="text/css" />
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js">
@@ -68,7 +68,7 @@
     </style>
   </head>
   <body>
-    <h1>Welcome to Solar Permitting for {{ jurisdiction|e }}</h1>
+    <h1>Welcome to Solar Permitting for {{ main.jurisdiction|e }}</h1>
 
     {% if user %}
     {% if user.role %}
@@ -115,22 +115,22 @@
     {% endif %}
 
     {% if user.role == "Applicant" %}
-    <div id="start-new-project">
-      <a href="#" id="start-new-project-button" class="button">
-	Start a new Project
+    <div id="start-new-case">
+      <a href="/case/new" id="start-new-case-button" class="button">
+	Start a new Case
       </a>
     </div>
 
     </div>
     <div id="cases-in-progress" class="list-panel">
-      You have N projects in progress.  
+      You have N cases in progress.  
       The most recently modified ones appear first.
 
-      <table class="tablesorter" id="projects"> 
+      <table class="tablesorter" id="cases"> 
 	<thead>
 	  <tr>
 	    <th>
-	      Project Name
+	      Case Name
 	    </th>
 	    <th>
 	      Creation Date

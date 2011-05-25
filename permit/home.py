@@ -12,6 +12,7 @@ from tipfy.app import Response
 from tipfy.handler import RequestHandler
 from tipfy.sessions import SessionMiddleware
 from tipfyext.jinja2 import Jinja2Mixin
+import config
 import models
 
 
@@ -50,9 +51,9 @@ class HomeHandler(RequestHandler, Jinja2Mixin):
                 user.put()
 
         context = {
-            'jurisdiction': 'City of Light',
             'user': user, 
             'roles': models.USER_ROLES,
         }
+        context.update(config.config)
 
         return self.render_response('home.html', **context)

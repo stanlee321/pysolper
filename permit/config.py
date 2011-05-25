@@ -4,3 +4,7 @@ config = {}
 config['tipfy.sessions'] = {
     'secret_key': 'n8c0q38asovnlzisnco'
     }
+config['main'] = {
+    'jurisdiction': 'City of Light',
+    }
+
