@@ -1,4 +1,24 @@
 {% extends "base.html" %}
+{% block style %}
+<style>
+div.case-detail {
+  border: 1px solid #ccc;
+  margin-right: 300px;
+}
+div#action-history {
+  border: 1px solid #ccc;
+  width: 260px;
+  float: right;
+}
+div.action {
+  margin-top: 10px;
+  border-top: 1px solid #ccc;
+}
+div.action span.timestamp {
+  float: right;
+}
+</style>
+{% endblock %}
 {% block script %}
 <script>
   $(function() {
@@ -15,9 +35,33 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Details for Case: {{ case.address|e }}</h1>
+<h1>Details for Case: {{ case.address|e }}</h1>
 
-<div class="list-panel">
+<div>
+  <a href="/applicant/home" class="button">
+    Back
+  </a>
+</div>
+
+<div id="action-history" class="panel">
+  <strong>Activity Log</strong>
+  {% for action in actions %}
+  <div class="action">
+    <span class="timestamp">
+      {{ action.timestamp.strftime('%d %b %Y') }}
+    </span>
+    {{ action.action }}
+    <br/>
+    {{ action.actor.email }}
+    {% if action.notes %}
+    <br/>
+    {{ action.notes }}
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+
+<div class="case-detail panel">
   <div>
     {{ case.address|e }}
   </div>
@@ -49,12 +93,28 @@
   </div>
 </div>
 
+<div class="case-detail panel">
+  <p>
+    Use this area to attach documents and add notes.
+  </p>
+  <a href="#TODO" class="button">
+    Add a new document.
+  </a>
+</div>
+
+<div class="case-detail panel">
+  <p>
+    When the case is up to date and all documentation is complete, you can
+    submit the case for approval.
+  </p>
+  <a href="#TODO" class="button">
+    Submit for approval
+  </a>
+</div>
+
 <div>
   <a href="/applicant/home" class="button">
     Back
-  </a>
-  <a href="#TODO" class="button">
-    Submit for approval
   </a>
 </div>
 

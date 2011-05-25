@@ -26,6 +26,11 @@ table span.tablesorthack {
    padding: 10px;
    width: 90%;
 }
+.panel {
+   border: 1px solid #ccc;
+   margin: 10px;
+   padding: 10px;
+}
 table.tablesorter thead th.header {
    padding-right: 20px;
 }

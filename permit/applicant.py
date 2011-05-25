@@ -69,9 +69,13 @@ class CaseDetailsHandler(RequestHandler, Jinja2Mixin):
         if not user:
             return self.redirect('/')
 
+        case = models.Case.get_by_id(id)
+        actions = models.CaseAction.query_by_case(case).order('-timestamp')
+
         context = {
             'user': user,
-            'case': models.Case.get_by_id(id)
+            'case': case,
+            'actions': actions,
         }
         context.update(config.config)
 
