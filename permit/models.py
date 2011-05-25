@@ -55,9 +55,8 @@ class Case(db.Model):
     def submit(self, actor, notes):
         self.state = CASE_STATES[1]
         self.put()
-        action = CaseAction(action='Submit', case=self, actor=actor)
-	if notes is not None:
-	    action.notes = notes
+        action = CaseAction(action='Submit', case=self, actor=actor,
+	                    notes=notes)
         action.put()
 
     @property
@@ -93,13 +92,8 @@ class CaseAction(db.Model):
 
     @classmethod
     def upload_document_action(cls, case, purpose, user, blob_info, notes):
-        action = cls(action='Update', case=case, actor=user)
-	if purpose is not None:
-	    action.purpose = purpose
-	if notes is not None:
-	    action.notes = notes
-	if upload is not None:
-	    action.upload = upload
+        action = cls(action='Update', case=case, actor=user,
+	             purpose=purpose, notes=notes, upload=blob_info);
         action.put()
 
 
