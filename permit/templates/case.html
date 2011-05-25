@@ -17,6 +17,12 @@ div.action {
 div.action span.timestamp {
   float: right;
 }
+.panel-title {
+  font-weight: bold;
+}
+a.action {
+  float: right;
+}
 </style>
 {% endblock %}
 {% block script %}
@@ -44,7 +50,7 @@ div.action span.timestamp {
 </div>
 
 <div id="action-history" class="panel">
-  <strong>Activity Log</strong>
+  <div class="panel-title">Activity Log</div>
   {% for action in actions %}
   <div class="action">
     <span class="timestamp">
@@ -66,50 +72,35 @@ div.action span.timestamp {
     {{ case.address|e }}
   </div>
   <div>
-    {{ case.creation_date|e }}
+    Created: {{ case.creation_date|e }}
   </div>
   <div>
-    {{ case.visible_state|e }}
+    Status: {{ case.visible_state|e }}
   </div>
   <div>
-    {{ case.latest_action.action|e }}
-  </div>
-  <div>
-    <span class="tablesorthack">
-      {{ case.latest_action.timestamp.isoformat()|e }}
-    </span>
-    {% if case.last_modified.days == 0 %}
-    {% if case.last_modified.seconds < 7200 %}
-
-    {{ case.last_modified.seconds // 60 }} minutes ago
-    {% else %}
-    {{ case.last_modified.seconds // 3600 }} hours ago
-    {% endif %}
-    {% elif case.last_modified.days == 1 %}
-    {{ case.last_modified.days|e }} one day ago
-    {% else %}
-    {{ case.last_modified.days|e }} days ago
-    {% endif %}
+    TODO: more info about the case
   </div>
 </div>
 
 <div class="case-detail panel">
+  <div class="panel-title">Documents</div>
+  <a href="#TODO" class="action button">
+    Add a new document.
+  </a>
   <p>
     Use this area to attach documents and add notes.
   </p>
-  <a href="#TODO" class="button">
-    Add a new document.
-  </a>
 </div>
 
 <div class="case-detail panel">
-  <p>
-    When the case is up to date and all documentation is complete, you can
-    submit the case for approval.
-  </p>
-  <a href="#TODO" class="button">
+  <div class="panel-title">Approval</div>
+  <a href="#TODO" class="action button">
     Submit for approval
   </a>
+  <p>
+    When this case is up to date and all documentation is complete, you can
+    submit the case for approval.
+  </p>
 </div>
 
 <div>
