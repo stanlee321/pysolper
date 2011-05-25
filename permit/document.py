@@ -26,7 +26,12 @@ class AddDocumentHandler(RequestHandler, Jinja2Mixin):
             return self.redirect('/')
 
         case = models.Case.get_by_id(id)
-        # TODO: upload document and notes to this case
 
-        return self.redirect('/case/details/%s' % case.key().id())
+        context = {
+            'user': user,
+            'case': case,
+        }
+        context.update(config.config)
+
+        return self.render_response('document_upload.html', **context)
 
