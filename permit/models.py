@@ -12,6 +12,7 @@
 import datetime
 from google.appengine.ext import db
 from google.appengine.ext import blobstore
+import timesince
 
 USER_ROLES = ('Permit Approver', 'Applicant', 'Spectator')
 # These may be ordered lexicographically, the first three characters
@@ -80,6 +81,10 @@ class CaseAction(db.Model):
     notes = db.TextProperty(required=False)
     upload = blobstore.BlobReferenceProperty(required=False)
     timestamp = db.DateTimeProperty(auto_now_add=True, required=True)
+
+    @property
+    def timesince(self):
+        return timesince.timesince(self.timestamp)
 
     @classmethod
     def query_by_case(cls, case):

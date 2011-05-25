@@ -68,11 +68,15 @@ div.action span.timestamp {
   {% for action in actions %}
   <div class="action">
     <span class="timestamp">
-      {{ action.timestamp.strftime('%d %b %Y') }}
+      {{ action.timesince }} ago
     </span>
     {{ action.action }}
     <br/>
     {{ action.actor.email }}
+    {% if action.purpose %}
+    <br/>
+    {{ action.purpose }}
+    {% endif %}
     {% if action.notes %}
     <br/>
     {{ action.notes }}
