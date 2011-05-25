@@ -9,14 +9,14 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 
-import datetime 
+import datetime
 from google.appengine.ext import db
 from google.appengine.ext import blobstore
 
 USER_ROLES = ('Permit Approver', 'Applicant', 'Spectator')
-# These may be ordered lexicographically, the first three characters 
-# will be stripped before display. 
-CASE_STATES = ('00 Incomplete', '10 Submitted', 
+# These may be ordered lexicographically, the first three characters
+# will be stripped before display.
+CASE_STATES = ('00 Incomplete', '10 Submitted',
                '20 Commented', '30 Approved', '40 Denied')
 CASE_ACTIONS = ('Create', 'Update', 'Submit', 'Comment', 'Approve', 'Deny')
 
@@ -34,7 +34,7 @@ class Case(db.Model):
     owner = db.ReferenceProperty(User, required=True)
     state = db.StringProperty(required=True, choices=CASE_STATES)
     email_listeners = db.StringListProperty()
-    
+
     @classmethod
     def query_by_owner(cls, user):
         """Returns a db.Query."""
@@ -44,10 +44,17 @@ class Case(db.Model):
     def create(cls, owner, **k):
         case = cls(state=CASE_STATES[0], owner=owner, **k)
         case.put()
-        first_action = CaseAction(action=CASE_ACTIONS[0], 
+        first_action = CaseAction(action=CASE_ACTIONS[0],
                                   case=case, actor=owner)
         first_action.put()
         return case
+
+    def submit(self, actor, notes):
+        self.state = '10 Submitted'
+        self.put()
+        action = CaseAction(action='Submit',
+                            case=self, actor=actor, notes=notes)
+        action.put()
 
     @property
     def visible_state(self):
@@ -59,7 +66,7 @@ class Case(db.Model):
 
     @property
     def last_modified(self):
-        delta = datetime.datetime.now() - self.latest_action.timestamp 
+        delta = datetime.datetime.now() - self.latest_action.timestamp
         return delta
 
 
@@ -82,7 +89,7 @@ class Document(db.Model):
     uploaded_by = db.ReferenceProperty(User, required=True)
     uploaded_time = db.DateTimeProperty(required=True, auto_now_add=True)
     # Either comments or notes or both will be present.
-    contents = blobstore.BlobReferenceProperty(required=False)  
+    contents = blobstore.BlobReferenceProperty(required=False)
     notes = db.TextProperty(required=False)
 
 

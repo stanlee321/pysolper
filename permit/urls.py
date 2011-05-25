@@ -7,4 +7,5 @@ rules = [
     Rule('/applicant/home', handler='applicant.HomeHandler'),
     Rule('/case/create', handler='applicant.CreateCaseHandler'),
     Rule('/case/details/<int:id>', handler='applicant.CaseDetailsHandler'),
+    Rule('/case/submit/<int:id>', handler='applicant.CaseSubmitHandler'),
 ]

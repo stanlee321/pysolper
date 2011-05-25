@@ -53,12 +53,23 @@ class CreateCaseHandler(RequestHandler, Jinja2Mixin):
             address = '123 Elm Street',
             )
 
-        context = {
-            'user': user,
-        }
-        context.update(config.config)
+        return self.redirect('/applicant/home')
+
+
+class CaseSubmitHandler(RequestHandler, Jinja2Mixin):
+    middleware = [SessionMiddleware()]
+
+    def post(self, id):
+        user = models.User.get_by_email(self.session.get('email'))
+        if not user:
+            return self.redirect('/')
+
+        note = self.request.args.get('note')
+        case = models.Case.get_by_id(id)
+        case.submit(user, note)
 
         return self.redirect('/applicant/home')
+
 
 class CaseDetailsHandler(RequestHandler, Jinja2Mixin):
     middleware = [SessionMiddleware()]

@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{% block breadcrumb %}
+<a href="/applicant/home">Home</a>
+{% endblock %}
 {% block style %}
 <style>
 div.case-detail {
@@ -9,6 +12,7 @@ div#action-history {
   border: 1px solid #ccc;
   width: 260px;
   float: right;
+  margin-top: 0;
 }
 div.action {
   margin-top: 10px;
@@ -20,8 +24,21 @@ div.action span.timestamp {
 .panel-title {
   font-weight: bold;
 }
-a.action {
+.action-form {
   float: right;
+}
+.action-form textarea,
+.action-form div,
+.action-form input {
+  margin: 10px;
+  float: right;
+}
+.action-form div {
+  margin-bottom: 0;
+}
+
+.action-instruction {
+  margin-right: 300px;
 }
 </style>
 {% endblock %}
@@ -41,13 +58,10 @@ a.action {
 {% endblock %}
 
 {% block content %}
-<h1>Details for Case: {{ case.address|e }}</h1>
-
 <div>
-  <a href="/applicant/home" class="button">
-    Back
-  </a>
+  <h1>Details for Case: {{ case.address|e }}</h1>
 </div>
+
 
 <div id="action-history" class="panel">
   <div class="panel-title">Activity Log</div>
@@ -84,7 +98,7 @@ a.action {
 
 <div class="case-detail panel">
   <div class="panel-title">Documents</div>
-  <a href="#TODO" class="action button">
+  <a href="#TODO" class="action-form button">
     Add a new document.
   </a>
   <p>
@@ -92,20 +106,28 @@ a.action {
   </p>
 </div>
 
+{% if case.visible_state != 'Submitted' %}
 <div class="case-detail panel">
   <div class="panel-title">Approval</div>
-  <a href="#TODO" class="action button">
-    Submit for approval
-  </a>
-  <p>
+  <form class="action-form"
+	action="/case/submit/{{ case.key().id() }}" method="POST">
+    <div>Notes for approver (optional)</div>
+    <br/>
+    <textarea id="notes" cols=33 rows=4></textarea>
+    <br/>
+    <input type="submit" class="action button" value="Submit for approval">
+  </form>
+  <p class="action-instruction">
     When this case is up to date and all documentation is complete, you can
     submit the case for approval.
   </p>
+  <div style="clear: both"></div>
 </div>
+{% endif %}
 
 <div>
   <a href="/applicant/home" class="button">
-    Back
+    Home
   </a>
 </div>
 

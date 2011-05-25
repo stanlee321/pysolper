@@ -7,8 +7,10 @@ body {
 }
 div.header, div.footer {
    width: 100%;
-   text-align: right;
    padding: 4px;
+}
+div.header .login-info {
+   float: right;
 }
 div.content {
    min-height: 90%;
