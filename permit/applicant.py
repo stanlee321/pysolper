@@ -8,6 +8,7 @@
     :copyright: 2011 by Google, Inc.
     :license: Apache 2.0, see LICENSE for more details.
 """
+from google.appengine.ext import blobstore
 from tipfy.app import Response
 from tipfy.handler import RequestHandler
 from tipfy.sessions import SessionMiddleware
@@ -85,12 +86,16 @@ class CaseDetailsHandler(RequestHandler, Jinja2Mixin):
         actions = models.CaseAction.query_by_case(case).order('-timestamp')
         documents = models.CaseAction.query_updates_by_case(case)
 	documents = documents.order('-timestamp')
+        upload_url = blobstore.create_upload_url(
+            '/document/upload/%s' % case.key().id())
 
         context = {
             'user': user,
             'case': case,
             'actions': actions,
             'documents': documents,
+            'uploadables': models.PURPOSES,
+            'upload_url': upload_url,
         }
         context.update(config.config)
 

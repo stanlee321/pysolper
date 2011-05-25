@@ -29,6 +29,22 @@ indexes:
 
 - kind: CaseAction
   properties:
+  - name: action
+  - name: case
+  - name: purpose
+  - name: timestamp
+    direction: desc
+
+- kind: CaseAction
+  properties:
+  - name: action
+  - name: case
+  - name: purpose=
+  - name: timestamp
+    direction: desc
+
+- kind: CaseAction
+  properties:
   - name: case
   - name: timestamp
     direction: desc

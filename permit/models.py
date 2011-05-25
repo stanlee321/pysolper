@@ -22,6 +22,11 @@ CASE_STATES = ('00 Incomplete', '10 Submitted',
 CASE_ACTIONS = ('Create', 'Update',
                 'Submit', 'Comment', 'Approve', 'Deny')
 
+PURPOSES = (
+    'Site Diagram',
+    'Electrical Diagram',
+    'Equipment Schedule'
+    )
 
 class User(db.Model):
     email = db.EmailProperty(required=True)
@@ -71,6 +76,11 @@ class Case(db.Model):
     def last_modified(self):
         return datetime.datetime.now() - self.latest_action.timestamp
 
+    def get_document(self, purpose):
+        q= CaseAction.query_updates_by_case(self).filter('purpose =', purpose)
+        q.order('-timestamp')
+        return q.get()
+
 
 class CaseAction(db.Model):
     """Immutable once created."""
@@ -82,17 +92,13 @@ class CaseAction(db.Model):
     upload = blobstore.BlobReferenceProperty(required=False)
     timestamp = db.DateTimeProperty(auto_now_add=True, required=True)
 
-    @property
-    def timesince(self):
-        return timesince.timesince(self.timestamp)
-
     @classmethod
     def query_by_case(cls, case):
         return cls.all().filter('case = ', case)
 
     @classmethod
     def query_updates_by_case(cls, case):
-        return cls.all().filter('case = ', case).filter('action = ', 'Update')
+        return cls.query_by_case(case).filter('action = ', 'Update')
 
     @classmethod
     def upload_document_action(cls, case, purpose, user, blob_info, notes):
@@ -100,4 +106,12 @@ class CaseAction(db.Model):
 	             purpose=purpose, notes=notes, upload=blob_info);
         action.put()
 
+    @property
+    def timesince(self):
+        return timesince.timesince(self.timestamp)
 
+    @property
+    def download_url(self):
+        if not self.upload:
+            return ''
+        return '/document/serve/%s' % self.upload.key()

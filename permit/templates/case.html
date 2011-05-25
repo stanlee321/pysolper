@@ -40,6 +40,10 @@ div.action span.timestamp {
 .action-instruction {
   margin-right: 300px;
 }
+
+.uploadable {
+  min-height: 300px;
+}
 </style>
 {% endblock %}
 {% block script %}
@@ -101,13 +105,45 @@ div.action span.timestamp {
 </div>
 
 <div class="case-detail panel">
-  <div class="panel-title">Documents</div>
-  <a href="/document/add/{{ case.key().id() }}" class="action-form button">
-    Add a new document.
-  </a>
-  <p>
-    Use this area to attach documents and add notes.
-  </p>
+  <div class="panel-title">Tables and Diagrams</div>
+  {% for purpose in uploadables %}
+  <div class="uploadable">
+    <div class="panel-title">
+      {{ purpose }}
+    </div>
+    <form class="action-form"
+	  action="{{ upload_url }}" method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="purpose" value="{{ purpose }}">
+      Notes:
+      <br/>
+      <textarea name="notes" rows=5 cols=40></textarea>
+      <br/>
+      Upload File:
+      <input type="file" name="file">
+      <br/>
+      <input type="submit" value="Upload"
+	 class="action-form button">
+    </form>
+    <a href="#">Start with an empty example</a>
+    <p>
+    {% if case.get_document(purpose) %}
+    Uploaded
+    {{ case.get_document(purpose).timesince }} ago
+    by {{ case.get_document(purpose).actor.email }}
+    ({{ case.get_document(purpose).actor.role }}).
+    </p>
+    {% if case.get_document(purpose).notes %}
+    <pre>{{ case.get_document(purpose).notes }}</pre>
+    {% endif %}
+    {% if case.get_document(purpose).download_url %}
+    <a href="{{ case.get_document(purpose).download_url }}">Download</a>
+    {% endif %}
+    {% else %}
+      Missing.
+    {% endif %}
+    </p>
+  </div>
+  {% endfor %}
 </div>
 
 {% if case.visible_state != 'Submitted' %}

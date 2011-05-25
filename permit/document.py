@@ -67,3 +67,16 @@ class UploadHandler(RequestHandler, Jinja2Mixin,
         response = self.redirect('/case/details/%s' % case.key().id())
         response.data = ''
         return response
+
+
+class DownloadHandler(RequestHandler, Jinja2Mixin,
+                      tipfy_blobstore.BlobstoreDownloadMixin):
+    middleware = [SessionMiddleware()]
+
+    def get(self, key):
+        """Download a document."""
+        user = models.User.get_by_email(self.session.get('email'))
+        if not user:
+            return self.redirect('/')
+
+        return self.send_blob(blobstore.BlobInfo.get(key))
