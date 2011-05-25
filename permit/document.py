@@ -57,9 +57,9 @@ class UploadHandler(RequestHandler, Jinja2Mixin,
 
         models.CaseAction.upload_document_action(
             case,
-            self.request.args.get('purpose'),
+            self.request.form.get('purpose'),
             user, blob_info,
-            self.request.args.get('notes'))
+            self.request.form.get('notes'))
 
         response = self.redirect('/case/details/%s' % case.key().id())
         response.data = ''
