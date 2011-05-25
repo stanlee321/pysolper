@@ -3,7 +3,7 @@
     applicant
     ~~~~~~~~~~~~~~~~~~~~
 
-    Handlers for Applicant functionality. 
+    Handlers for Applicant functionality.
 
     :copyright: 2011 by Google, Inc.
     :license: Apache 2.0, see LICENSE for more details.
@@ -30,8 +30,8 @@ class HomeHandler(RequestHandler, Jinja2Mixin):
         cases.sort(key=lambda c: c.last_modified, reverse=True)
 
         context = {
-            'user': user, 
-            'cases': cases, 
+            'user': user,
+            'cases': cases,
         }
         context.update(config.config)
 
@@ -52,10 +52,28 @@ class CreateCaseHandler(RequestHandler, Jinja2Mixin):
             owner = user,
             address = '123 Elm Street',
             )
-        
+
         context = {
-            'user': user, 
+            'user': user,
         }
         context.update(config.config)
 
         return self.redirect('/applicant/home')
+
+class CaseDetailsHandler(RequestHandler, Jinja2Mixin):
+    middleware = [SessionMiddleware()]
+
+    def get(self, id):
+        """Create a new case."""
+        user = models.User.get_by_email(self.session.get('email'))
+        if not user:
+            return self.redirect('/')
+
+        context = {
+            'user': user,
+            'case': models.Case.get_by_id(id)
+        }
+        context.update(config.config)
+
+        return self.render_response('case.html', **context)
+

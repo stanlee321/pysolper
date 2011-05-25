@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block script %}
+<script>
+  $(function() {
+    $('.button').button();
+    $('table.tablesorter').tablesorter({
+      headers: {
+        4: {sorter: 'text'},
+        5: {sorter: false}
+      },
+      sortList: [[4, 1]]
+    });
+  });
+</script>
+{% endblock %}
+
+{% block content %}
+    <h1>Details for Case: {{ case.address|e }}</h1>
+
+<div class="list-panel">
+  <div>
+    {{ case.address|e }}
+  </div>
+  <div>
+    {{ case.creation_date|e }}
+  </div>
+  <div>
+    {{ case.visible_state|e }}
+  </div>
+  <div>
+    {{ case.latest_action.action|e }}
+  </div>
+  <div>
+    <span class="tablesorthack">
+      {{ case.latest_action.timestamp.isoformat()|e }}
+    </span>
+    {% if case.last_modified.days == 0 %}
+    {% if case.last_modified.seconds < 7200 %}
+
+    {{ case.last_modified.seconds // 60 }} minutes ago
+    {% else %}
+    {{ case.last_modified.seconds // 3600 }} hours ago
+    {% endif %}
+    {% elif case.last_modified.days == 1 %}
+    {{ case.last_modified.days|e }} one day ago
+    {% else %}
+    {{ case.last_modified.days|e }} days ago
+    {% endif %}
+  </div>
+</div>
+
+<div>
+  <a href="/applicant/home" class="button">
+    Back
+  </a>
+  <a href="#TODO" class="button">
+    Submit for approval
+  </a>
+</div>
+
+{% endblock %}

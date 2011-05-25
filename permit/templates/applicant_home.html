@@ -87,7 +87,9 @@
 	  {% endif %}
 	</td>
 	<td>
-	  <a href="#TODO" class="button">Details</a>
+	  <a href="/case/details/{{ case.key().id() }}" class="button">
+	    Details
+	  </a>
 	</td>
       </tr>
       {% endfor %}
