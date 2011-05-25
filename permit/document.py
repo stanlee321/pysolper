@@ -10,7 +10,7 @@
 """
 from google.appengine.ext import blobstore
 from tipfy.app import Response
-from tipfy.appengine import blobstore
+from tipfy.appengine import blobstore as tipfy_blobstore
 from tipfy.handler import RequestHandler
 from tipfy.sessions import SessionMiddleware
 from tipfyext.jinja2 import Jinja2Mixin
@@ -28,8 +28,11 @@ class AddDocumentHandler(RequestHandler, Jinja2Mixin):
             return self.redirect('/')
 
         case = models.Case.get_by_id(id)
+        upload_url = blobstore.create_upload_url(
+            '/document/upload/%s' % case.key().id())
 
         context = {
+            'upload_url': upload_url,
             'user': user,
             'case': case,
         }
@@ -38,7 +41,8 @@ class AddDocumentHandler(RequestHandler, Jinja2Mixin):
         return self.render_response('document_upload.html', **context)
 
 
-class UploadHandler(RequestHandler, Jinja2Mixin):
+class UploadHandler(RequestHandler, Jinja2Mixin,
+                    tipfy_blobstore.BlobstoreUploadMixin):
     middleware = [SessionMiddleware()]
 
     def post(self, id):
@@ -57,8 +61,6 @@ class UploadHandler(RequestHandler, Jinja2Mixin):
             user, blob_info,
             self.request.args.get('notes'))
 
-        response = redirect_to('/case/detail/' + case.key().id(),
-                               resource=blob_info.key())
-        # Clear the response body.
+        response = self.redirect('/case/details/%s' % case.key().id())
         response.data = ''
         return response
