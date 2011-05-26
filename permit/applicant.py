@@ -84,8 +84,6 @@ class CaseDetailsHandler(RequestHandler, Jinja2Mixin):
 
         case = models.Case.get_by_id(id)
         actions = models.CaseAction.query_by_case(case).order('-timestamp')
-        documents = models.CaseAction.query_updates_by_case(case)
-	documents = documents.order('-timestamp')
         upload_url = blobstore.create_upload_url(
             '/document/upload/%s' % case.key().id())
 
@@ -93,7 +91,6 @@ class CaseDetailsHandler(RequestHandler, Jinja2Mixin):
             'user': user,
             'case': case,
             'actions': actions,
-            'documents': documents,
             'uploadables': models.PURPOSES,
             'upload_url': upload_url,
         }
