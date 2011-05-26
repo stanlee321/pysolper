@@ -17,10 +17,10 @@
     $('.button').button();
     $('table.tablesorter').tablesorter({
       headers: {
-        4: {sorter: 'text'},
-        5: {sorter: false}
+        5: {sorter: 'text'},
+        6: {sorter: false}
       },
-      sortList: [[4, 1]]
+      sortList: [[5, 1]]
     });
   });
 </script>
@@ -68,7 +68,10 @@
 	  Latest Action
 	</th>
 	<th>
-	  Latest Action Time
+	  by
+	</th>
+	<th>
+	  when
 	</th>
 	<th>
 	</th>
@@ -88,6 +91,10 @@
 	</td>
 	<td>
 	  {{ case.latest_action.action|e }}
+	</td>
+	<td>
+	  {{ case.latest_action.actor.email|e }}
+	  ({{ case.latest_action.actor.role|e }})
 	</td>
 	<td>
 	  <span class="tablesorthack">
