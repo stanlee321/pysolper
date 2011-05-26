@@ -12,6 +12,6 @@ rules = [
          handler='document.DownloadHandler'),
     Rule('/document/upload/<int:id>', handler='document.UploadHandler'),
     Rule('/approver/home', handler='approver.HomeHandler'),
-    Rule('/approver/case/<int:id>', handler='approver.CaseDetailsHandler'),
+    Rule('/approver/case/<int:id>', handler='approver.CaseReviewHandler'),
     Rule('/case/approve/<int:id>', handler='approver.CaseApproveHandler'),
 ]

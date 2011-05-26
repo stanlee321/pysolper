@@ -30,6 +30,75 @@
   {% if my_cases %}
   There are {{ my_cases|length }} case{% if my_cases|length - 1 %}s{% endif %}
   that you are currently in the process of reviewing.
+  <table class="tablesorter" id="my_cases">
+    <thead>
+      <tr>
+	<th>
+	  Case Name
+	</th>
+	<th>
+	  Creation Date
+	</th>
+	<th>
+	  Status
+	</th>
+	<th>
+	  Latest Action
+	</th>
+	<th>
+	  by
+	</th>
+	<th>
+	  when
+	</th>
+	<th>
+	</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for case in my_cases %}
+      <tr>
+	<td>
+	  {{ case.address|e }}
+	</td>
+	<td>
+	  {{ case.creation_date|e }}
+	</td>
+	<td>
+	  {{ case.visible_state|e }}
+	</td>
+	<td>
+	  {{ case.latest_action.action|e }}
+	</td>
+	<td>
+	  {{ case.latest_action.actor.email|e }}
+	  ({{ case.latest_action.actor.role|e }})
+	</td>
+	<td>
+	  <span class="tablesorthack">
+	    {{ case.latest_action.timestamp.isoformat()|e }}
+	  </span>
+	  {% if case.last_modified.days == 0 %}
+	  {% if case.last_modified.seconds < 7200 %}
+	  {{ case.last_modified.seconds // 60 }} minutes ago
+	  {% else %}
+	  {{ case.last_modified.seconds // 3600 }} hours ago
+	  {% endif %}
+	  {% elif case.last_modified.days == 1 %}
+	  {{ case.last_modified.days|e }} one day ago
+	  {% else %}
+	  {{ case.last_modified.days|e }} days ago
+	  {% endif %}
+	</td>
+	<td>
+	  <a href="/approver/case/{{ case.key().id() }}" class="button">
+	    Details
+	  </a>
+	</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
   {% else %}
     You are not currently reviewing any case.
   {% endif %}
@@ -102,7 +171,7 @@
 	</td>
 	<td>
 	  <a href="/approver/case/{{ case.key().id() }}" class="button">
-	    Details
+	    Review
 	  </a>
 	</td>
       </tr>

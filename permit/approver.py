@@ -30,11 +30,13 @@ class HomeHandler(RequestHandler, Jinja2Mixin):
         open_cases = list(open_cases.order('state').run())
         open_cases.sort(key=lambda c: c.last_modified, reverse=True)
 
+	my_cases, other_cases = models.Case.reviewed_by(user)
+
         context = {
             'user': user,
             'open_cases': open_cases,
-            'num_other_cases': 2,
-	    'my_cases': [],
+            'num_other_cases': len(other_cases),
+	    'my_cases': my_cases,
         }
         context.update(config.config)
 
@@ -57,7 +59,7 @@ class CaseApproveHandler(RequestHandler, Jinja2Mixin):
         return self.redirect('/approver/home')
 
 
-class CaseDetailsHandler(RequestHandler, Jinja2Mixin):
+class CaseReviewHandler(RequestHandler, Jinja2Mixin):
     middleware = [SessionMiddleware()]
 
     def get(self, id):
@@ -67,9 +69,9 @@ class CaseDetailsHandler(RequestHandler, Jinja2Mixin):
             return self.redirect('/')
 
         case = models.Case.get_by_id(id)
-        actions = models.CaseAction.query_by_case(case).order('-timestamp')
-        documents = models.CaseAction.query_updates_by_case(case)
-	documents = documents.order('-timestamp')
+	case.review(user)
+        actions = models.CaseAction.query_by_case(case)
+        documents = models.CaseAction.query_by_case(case, 'Update')
 
         context = {
             'user': user,

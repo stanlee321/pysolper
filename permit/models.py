@@ -22,7 +22,7 @@ USER_ROLES = ('Applicant', 'Permit Approver')
 
 CASE_STATES = {'incomplete': '00 Incomplete',
                'submitted': '10 Submitted For Review',
-	       'being_examined': '20 Review Under Way',
+	       'under_review': '20 Review Under Way',
 	       'needs_work': '30 Needs Work',
 	       'approved': '40 Approved',
 	       'denied': '50 Rejected',
@@ -57,6 +57,12 @@ class User(db.Model):
     def can_approve(self):
         return self.role == 'Permit Approver'
 
+    def __eq__(self, other):
+        return self.email == other.email
+
+    def __ne__(self, other):
+        return self.email != other.email
+
 
 class Case(db.Model):
     address = db.StringProperty(required=True)
@@ -71,9 +77,24 @@ class Case(db.Model):
         return cls.all().filter('owner = ', user)
 
     @classmethod
+    def query_under_review(cls):
+       return cls.all().filter('state = ', CASE_STATES['under_review'])
+
+    @classmethod
     def query_submitted(cls):
         """Returns a db.Query."""
         return cls.all().filter('state = ', CASE_STATES['submitted'])
+
+    @classmethod
+    def reviewed_by(cls, user):
+       these_cases, other_cases = [], []
+       q = cls.query_under_review()
+       for case in q.run():
+           if case.reviewer == user:
+	       these_cases.append(case)
+	   else:
+	       other_cases.append(case)
+       return these_cases, other_cases
 
     @classmethod
     def create(cls, owner, **k):
@@ -89,6 +110,16 @@ class Case(db.Model):
         action = CaseAction.make(action='Submit', case=self, actor=actor,
 	                    notes=notes)
         action.put()
+
+    def review(self, approver):
+	previous_reviewer = self.reviewer
+	if previous_reviewer == approver:
+	    return
+	# reviewer assignment or change requires actual action, state change
+        self.state = CASE_STATES['under_review']
+	self.put()
+	action = CaseAction.make(action='Review', case=self, actor=approver)
+	action.put()
 
     def approve(self, actor, notes):
         self.state = CASE_STATES['approved']
@@ -114,6 +145,12 @@ class Case(db.Model):
         return self.state in APPLICANT_EDITABLE
 
     @property
+    def reviewer(self):
+       if self.state != CASE_STATES['under_review']:
+           return None
+       return CaseAction.query_by_case(self, 'Review').get().actor
+
+    @property
     def submit_blockers(self):
         blockers = []
         for purpose in PURPOSES:
@@ -122,8 +159,7 @@ class Case(db.Model):
         return blockers
 
     def get_document(self, purpose):
-        q= CaseAction.query_updates_by_case(self).filter('purpose =', purpose)
-        q.order('-timestamp')
+        q = CaseAction.query_by_case(self, 'Update').filter('purpose =', purpose)
         return q.get()
 
 
@@ -146,12 +182,11 @@ class CaseAction(db.Model):
 
 
     @classmethod
-    def query_by_case(cls, case):
-        return cls.all().filter('case = ', case)
-
-    @classmethod
-    def query_updates_by_case(cls, case):
-        return cls.query_by_case(case).filter('action = ', 'Update')
+    def query_by_case(cls, case, action=None):
+        q = cls.all().filter('case = ', case)
+	if action is not None:
+	    q.filter('action = ', action)
+	return q.order('-timestamp')
 
     @classmethod
     def upload_document_action(cls, case, purpose, user, blob_info, notes):
