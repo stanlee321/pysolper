@@ -13,6 +13,13 @@
 {% endblock %}
 {% block script %}
 <script>
+  function enableStartCaseForm() {
+    if ($('#address').val() == '') {
+      $('#start-new-case-button').button("option", "disabled", true);
+    } else {
+      $('#start-new-case-button').button("option", "disabled", false);
+    }
+  }
   $(function() {
     $('.button').button();
     $('table.tablesorter').tablesorter({
@@ -21,6 +28,13 @@
         6: {sorter: false}
       },
       sortList: [[5, 1]]
+    });
+    $('#address').keyup(enableStartCaseForm);
+    $('#address').paste(enableStartCaseForm);
+    $('#start-new-case-form').submit(function() {
+      if ($('#start-new-case-button').button("option", "disabled")) {
+        return false;
+      }
     });
   });
 </script>
@@ -43,7 +57,7 @@
   It's not necessary to add city/state/zip portion.
   </div>
   <input type="text" id="address" name="address">
-  <input type="submit" id="start-new-case-button" class="button"
+  <input type="submit" id="start-new-case-button" class="button" disabled
 	 value="Start a new Case">
   </form>
 </div>
