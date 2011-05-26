@@ -27,13 +27,18 @@ div.action span.timestamp {
 }
 .action-form {
   float: right;
-  width: 220px;
-  margin: 10px;
+  min-width: 220px;
+  max-width: 270px;
+  margin: 0;
+  margin-right: 10px;
 }
 .action-form textarea,
 .action-form div,
 .action-form input {
   margin: 10px;
+}
+.action-form textarea {
+  width: 100%;
 }
 .action-form div {
   margin-bottom: 0;
@@ -50,6 +55,12 @@ input.disabled {
   background-color: #ccc;
   color: #aaa;
 }
+.disabled {
+  opacity: 0.35;
+}
+.detail {
+  font-size: 0.8em;
+}
 </style>
 {% endblock %}
 {% block script %}
@@ -60,6 +71,8 @@ var c;
     $('.upload-button').button({disabled: true});
     {% if case.submit_blockers %}
     $('.approval-button').button({disabled: true});
+    $('#approval-form textarea').attr('disabled', true);
+    $('#approval-form div').addClass('disabled');
     {% endif %}
 
     $('.upload-form input.upload-file').change(
@@ -91,11 +104,12 @@ var c;
       {{ action.timesince }} ago
     </span>
     {{ action.action }}
-    <br/>
-    {{ action.actor.email }}
+  </div>
+  <div class="detail">
+    by {{ action.actor.email }} ({{ action.actor.role }})
     {% if action.purpose %}
     <br/>
-    {{ action.purpose }}
+    Upload {{ action.purpose }}
     {% endif %}
     {% if action.notes %}
     <br/>
@@ -133,7 +147,7 @@ var c;
       <form class="upload-form"
 	    action="{{ upload_url }}" method="POST" enctype="multipart/form-data">
 	<input type="hidden" name="purpose" value="{{ purpose }}">
-	Upload File:
+	Upload a new version:
 	<br/>
 	<input type="file" name="file" class="upload-file">
 	<br/>
@@ -142,30 +156,36 @@ var c;
       </form>
     </div>
     <div class="document-info">
-      <a href="/examples/{{ purpose }}.png" target="_blank">
-	Start with an empty example
-      </a>
-      <p>
-	{% if case.get_document(purpose) %}
+      {% if case.get_document(purpose) %}
+	<div>
+	<a href="{{ case.get_document(purpose).download_url }}" target="_blank">
+	  Get the latest version
+	</a>
+	<div class="detail">
 	{{ case.get_document(purpose).upload.filename }}
 	<br/>
 	Uploaded
 	{{ case.get_document(purpose).timesince }} ago
 	<br/>
 	by {{ case.get_document(purpose).actor.email }}
-	({{ case.get_document(purpose).actor.role }}).
-      </p>
+	({{ case.get_document(purpose).actor.role }})
+	{% if case.get_document(purpose).download_url %}
+	<br/>
+	{% endif %}
+	</div>
       {% if case.get_document(purpose).notes %}
       <pre>{{ case.get_document(purpose).notes }}</pre>
       {% endif %}
-      {% if case.get_document(purpose).download_url %}
-      <a href="{{ case.get_document(purpose).download_url }}" target="_blank">
-	Download Latest Version
-      </a>
-      {% endif %}
+      </div>
       {% else %}
       Missing.
       {% endif %}
+
+      <p>
+	<a href="/examples/{{ purpose }}.png" target="_blank">
+	  Get an empty example
+	</a>
+      </p>
     </div>
   </div>
   {% endfor %}
@@ -174,11 +194,10 @@ var c;
 {% if not case.submitted %}
 <div class="case-detail panel">
   <div class="panel-title">Approval</div>
-  <form class="action-form"
+  <form class="action-form" id="approval-form"
 	action="/case/submit/{{ case.key().id() }}" method="POST">
-    <div>Notes for approver (optional)</div>
-    <br/>
-    <textarea id="notes" cols=33 rows=4></textarea>
+    <div>Note for approver (optional)</div>
+    <textarea id="notes" rows=3></textarea>
     <br/>
     <input type="submit" class="action button approval-button"
 	   value="Submit for approval">
@@ -188,9 +207,9 @@ var c;
     submit the case for approval.
   </p>
   {% if case.submit_blockers %}
-  <p>
+  <p class="error">
   Can not submit yet:
-  <ul>
+  <ul class="error">
   {% for blocker in case.submit_blockers %}
   <li>{{ blocker }}</li>
   {% endfor %}
