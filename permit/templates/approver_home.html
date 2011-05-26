@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block style %}
+<style>
+</style>
+{% endblock %}
+{% block script %}
+<script>
+  $(function() {
+    $('.button').button();
+    $('table.tablesorter').tablesorter({
+      headers: {
+        5: {sorter: 'text'},
+        6: {sorter: false}
+      },
+      sortList: [[5, 1]]
+    });
+  });
+</script>
+{% endblock %}
+{% block title %}
+<h1>Permit Applications to Approve</h1>
+{% endblock %}
+{% block content %}
+<p>
+  As a solar permit approver, you can comment on applications and approve them.
+</p>
+
+<div id="cases-in-progress" class="panel full-width">
+  There are {{ cases|length }} case{% if cases|length - 1 %}s{% endif %}
+  awaiting review.
+
+  {% if cases %}
+  <table class="tablesorter" id="cases">
+    <thead>
+      <tr>
+	<th>
+	  Case Name
+	</th>
+	<th>
+	  Creation Date
+	</th>
+	<th>
+	  Status
+	</th>
+	<th>
+	  Latest Action
+	</th>
+	<th>
+	  by
+	</th>
+	<th>
+	  when
+	</th>
+	<th>
+	</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for case in cases %}
+      <tr>
+	<td>
+	  {{ case.address|e }}
+	</td>
+	<td>
+	  {{ case.creation_date|e }}
+	</td>
+	<td>
+	  {{ case.visible_state|e }}
+	</td>
+	<td>
+	  {{ case.latest_action.action|e }}
+	</td>
+	<td>
+	  {{ case.latest_action.actor.email|e }}
+	  ({{ case.latest_action.actor.role|e }})
+	</td>
+	<td>
+	  <span class="tablesorthack">
+	    {{ case.latest_action.timestamp.isoformat()|e }}
+	  </span>
+	  {% if case.last_modified.days == 0 %}
+	  {% if case.last_modified.seconds < 7200 %}
+	  {{ case.last_modified.seconds // 60 }} minutes ago
+	  {% else %}
+	  {{ case.last_modified.seconds // 3600 }} hours ago
+	  {% endif %}
+	  {% elif case.last_modified.days == 1 %}
+	  {{ case.last_modified.days|e }} one day ago
+	  {% else %}
+	  {{ case.last_modified.days|e }} days ago
+	  {% endif %}
+	</td>
+	<td>
+	  <a href="/approver/case/{{ case.key().id() }}" class="button">
+	    Details
+	  </a>
+	</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</div>
+{% endblock %}

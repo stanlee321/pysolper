@@ -15,7 +15,7 @@ from google.appengine.ext import db
 from google.appengine.ext import blobstore
 import timesince
 
-USER_ROLES = ('Permit Approver', 'Applicant')
+USER_ROLES = ('Applicant', 'Permit Approver')
 # Cases may be ordered lexicographically by state, the first three characters
 # of the state string will be stripped before display.
 CASE_STATES = ('00 Incomplete', '10 Submitted',
@@ -29,6 +29,7 @@ PURPOSES = (
     'Diagram Notes'
     )
 
+
 class User(db.Model):
     email = db.EmailProperty(required=True)
     role = db.StringProperty(choices=USER_ROLES, required=False)
@@ -36,6 +37,14 @@ class User(db.Model):
     @classmethod
     def get_by_email(cls, email):
         return cls.all().filter('email = ', email).get()
+
+    @property
+    def can_upload(self):
+        return self.role == 'Applicant'
+
+    @property
+    def can_approve(self):
+        return self.role == 'Permit Approver'
 
 
 class Case(db.Model):
@@ -49,6 +58,11 @@ class Case(db.Model):
     def query_by_owner(cls, user):
         """Returns a db.Query."""
         return cls.all().filter('owner = ', user)
+
+    @classmethod
+    def query_submitted(cls):
+        """Returns a db.Query."""
+        return cls.all().filter('state = ', CASE_STATES[1])
 
     @classmethod
     def create(cls, owner, **k):
@@ -65,6 +79,13 @@ class Case(db.Model):
 	                    notes=notes)
         action.put()
 
+    def approve(self, actor, notes):
+        self.state = CASE_STATES[3]
+        self.put()
+        action = CaseAction(action='Approve', case=self, actor=actor,
+	                    notes=notes)
+        action.put()
+
     @property
     def visible_state(self):
         return self.state[3:]
@@ -78,8 +99,8 @@ class Case(db.Model):
         return datetime.datetime.now() - self.latest_action.timestamp
 
     @property
-    def submitted(self):
-        return self.state == CASE_STATES[1]
+    def needs_approval(self):
+        return self.state in (CASE_STATES[0], CASE_STATES[2])
 
     @property
     def submit_blockers(self):

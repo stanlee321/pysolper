@@ -21,12 +21,12 @@ class HomeHandler(RequestHandler, Jinja2Mixin):
     middleware = [SessionMiddleware()]
 
     def get(self):
-        """Home Page for an Applicant."""
+        """Home Page for an Approver."""
         user = models.User.get_by_email(self.session.get('email'))
-        if not user:
+        if not user or user.role != 'Permit Approver':
             return self.redirect('/')
 
-        cases = models.Case.query_by_owner(user)
+        cases = models.Case.query_submitted()
         cases = list(cases.order('state').run())
         cases.sort(key=lambda c: c.last_modified, reverse=True)
 
@@ -36,41 +36,23 @@ class HomeHandler(RequestHandler, Jinja2Mixin):
         }
         context.update(config.config)
 
-        return self.render_response('applicant_home.html', **context)
+        return self.render_response('approver_home.html', **context)
 
 
-class CreateCaseHandler(RequestHandler, Jinja2Mixin):
-    middleware = [SessionMiddleware()]
-
-    def get(self):
-        """Create a new case."""
-        user = models.User.get_by_email(self.session.get('email'))
-        if not user:
-            return self.redirect('/')
-
-        # TODO: add a form!
-        case = models.Case.create(
-            owner = user,
-            address = self.request.args.get('address')
-            )
-
-        return self.redirect('/case/details/%s' % case.key().id())
-
-
-class CaseSubmitHandler(RequestHandler, Jinja2Mixin):
+class CaseApproveHandler(RequestHandler, Jinja2Mixin):
     middleware = [SessionMiddleware()]
 
     def post(self, id):
-        """Submit a case for approval."""
+        """Approve a case."""
         user = models.User.get_by_email(self.session.get('email'))
         if not user:
             return self.redirect('/')
 
         note = self.request.form.get('note')
         case = models.Case.get_by_id(id)
-        case.submit(user, note)
+        case.approve(user, note)
 
-        return self.redirect('/applicant/home')
+        return self.redirect('/approver/home')
 
 
 class CaseDetailsHandler(RequestHandler, Jinja2Mixin):
@@ -84,15 +66,16 @@ class CaseDetailsHandler(RequestHandler, Jinja2Mixin):
 
         case = models.Case.get_by_id(id)
         actions = models.CaseAction.query_by_case(case).order('-timestamp')
-        upload_url = blobstore.create_upload_url(
-            '/document/upload/%s' % case.key().id())
+        documents = models.CaseAction.query_updates_by_case(case)
+	documents = documents.order('-timestamp')
 
         context = {
             'user': user,
             'case': case,
             'actions': actions,
+            'documents': documents,
             'uploadables': models.PURPOSES,
-            'upload_url': upload_url,
+            'upload_url': 'bogus',
         }
         context.update(config.config)
 

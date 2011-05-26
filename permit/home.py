@@ -30,18 +30,18 @@ class HomeHandler(RequestHandler, Jinja2Mixin):
             email = self.request.args.get('email', None)
             if email:
                 # set email in session
-                self.session['email'] = email 
+                self.session['email'] = email
             else:
                 # try to get email from session
-                email = self.session.get('email', None) 
-                
+                email = self.session.get('email', None)
+
         if email:
             user = models.User.get_by_email(email)
             if not user:
                 user = models.User(email=email)
                 user.put()
-            
-        else: 
+
+        else:
             user = None
 
         if user:
@@ -52,9 +52,11 @@ class HomeHandler(RequestHandler, Jinja2Mixin):
 
             if user.role == 'Applicant':
                 return self.redirect('/applicant/home')
+            if user.role == 'Permit Approver':
+                return self.redirect('/approver/home')
 
         context = {
-            'user': user, 
+            'user': user,
             'roles': models.USER_ROLES,
         }
         context.update(config.config)
