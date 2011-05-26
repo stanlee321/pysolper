@@ -14,7 +14,7 @@ from google.appengine.ext import db
 from google.appengine.ext import blobstore
 import timesince
 
-USER_ROLES = ('Permit Approver', 'Applicant', 'Spectator')
+USER_ROLES = ('Permit Approver', 'Applicant')
 # Cases may be ordered lexicographically by state, the first three characters
 # of the state string will be stripped before display.
 CASE_STATES = ('00 Incomplete', '10 Submitted',
