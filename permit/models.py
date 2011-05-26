@@ -10,6 +10,7 @@
 """
 
 import datetime
+import logging
 import urllib
 from google.appengine.ext import db
 from google.appengine.ext import blobstore
@@ -78,21 +79,21 @@ class Case(db.Model):
     def create(cls, owner, **k):
         case = cls(state=CASE_STATES['incomplete'], owner=owner, **k)
         case.put()
-        first_action = CaseAction(action='Create', case=case, actor=owner)
+        first_action = CaseAction.make(action='Create', case=case, actor=owner)
         first_action.put()
         return case
 
     def submit(self, actor, notes):
         self.state = CASE_STATES['submitted']
         self.put()
-        action = CaseAction(action='Submit', case=self, actor=actor,
+        action = CaseAction.make(action='Submit', case=self, actor=actor,
 	                    notes=notes)
         action.put()
 
     def approve(self, actor, notes):
         self.state = CASE_STATES['approved']
         self.put()
-        action = CaseAction(action='Approve', case=self, actor=actor,
+        action = CaseAction.make(action='Approve', case=self, actor=actor,
 	                    notes=notes)
         action.put()
 
@@ -135,6 +136,14 @@ class CaseAction(db.Model):
     notes = db.TextProperty(required=False)
     upload = blobstore.BlobReferenceProperty(required=False)
     timestamp = db.DateTimeProperty(auto_now_add=True, required=True)
+
+    @classmethod
+    def make(cls, **k):
+        logging.info('********** ')
+        logging.info('********** NEW ACTION: %s', k)
+        logging.info('********** ')
+        return cls(**k)
+
 
     @classmethod
     def query_by_case(cls, case):
