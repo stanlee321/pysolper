@@ -36,12 +36,13 @@ div.header .app-name {
 }
 div.footer {
   border-top: 10px solid #fefe00;
+   text-align: center;
 }
 div.header .login-info {
    float: right;
 }
-div.footer {
-   text-align: center;
+div.content p {
+  margin: 10px;
 }
 div.title {
    height: 80px;
