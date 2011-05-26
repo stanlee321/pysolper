@@ -27,12 +27,13 @@ div.action span.timestamp {
 }
 .action-form {
   float: right;
+  width: 220px;
+  margin: 10px;
 }
 .action-form textarea,
 .action-form div,
 .action-form input {
   margin: 10px;
-  float: right;
 }
 .action-form div {
   margin-bottom: 0;
@@ -43,6 +44,7 @@ div.action span.timestamp {
 .uploadable {
   border-top: 1px solid #CCC;
   min-height: 150px;
+  margin-top: 20px;
 }
 input.disabled {
   background-color: #ccc;
@@ -77,7 +79,7 @@ var c;
 
 {% block content %}
 <div>
-  <h1>Details for Case: {{ case.address|e }}</h1>
+  <h1>Application: {{ case.address|e }}</h1>
 </div>
 
 
@@ -127,40 +129,44 @@ var c;
     <div class="panel-title">
       {{ purpose }}
     </div>
-    <form class="upload-form action-form"
-	  action="{{ upload_url }}" method="POST" enctype="multipart/form-data">
-      <input type="hidden" name="purpose" value="{{ purpose }}">
-      Upload File:
-      <br/>
-      <input type="file" name="file" class="upload-file">
-      <br/>
-      <input type="submit" name="upload" value="Upload" disabled
-	 class="action-form button upload-button">
-    </form>
-    <a href="/examples/{{ purpose }}.png" target="_blank">
-      Start with an empty example
-    </a>
-    <p>
-    {% if case.get_document(purpose) %}
-    {{ case.get_document(purpose).upload.filename }}
-    <br/>
-    Uploaded
-    {{ case.get_document(purpose).timesince }} ago
-    by {{ case.get_document(purpose).actor.email }}
-    ({{ case.get_document(purpose).actor.role }}).
-    </p>
-    {% if case.get_document(purpose).notes %}
-    <pre>{{ case.get_document(purpose).notes }}</pre>
-    {% endif %}
-    {% if case.get_document(purpose).download_url %}
-    <a href="{{ case.get_document(purpose).download_url }}" target="_blank">
-      Download Latest Version
-    </a>
-    {% endif %}
-    {% else %}
+    <div class="action-form">
+      <form class="upload-form"
+	    action="{{ upload_url }}" method="POST" enctype="multipart/form-data">
+	<input type="hidden" name="purpose" value="{{ purpose }}">
+	Upload File:
+	<br/>
+	<input type="file" name="file" class="upload-file">
+	<br/>
+	<input type="submit" name="upload" value="Upload" disabled
+	       class="button upload-button">
+      </form>
+    </div>
+    <div class="document-info">
+      <a href="/examples/{{ purpose }}.png" target="_blank">
+	Start with an empty example
+      </a>
+      <p>
+	{% if case.get_document(purpose) %}
+	{{ case.get_document(purpose).upload.filename }}
+	<br/>
+	Uploaded
+	{{ case.get_document(purpose).timesince }} ago
+	<br/>
+	by {{ case.get_document(purpose).actor.email }}
+	({{ case.get_document(purpose).actor.role }}).
+      </p>
+      {% if case.get_document(purpose).notes %}
+      <pre>{{ case.get_document(purpose).notes }}</pre>
+      {% endif %}
+      {% if case.get_document(purpose).download_url %}
+      <a href="{{ case.get_document(purpose).download_url }}" target="_blank">
+	Download Latest Version
+      </a>
+      {% endif %}
+      {% else %}
       Missing.
-    {% endif %}
-    </p>
+      {% endif %}
+    </div>
   </div>
   {% endfor %}
 </div>

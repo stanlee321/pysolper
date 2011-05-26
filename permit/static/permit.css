@@ -51,3 +51,6 @@ table.tablesorter {
 .ui-button {
    margin: 10px;
 }
+input {
+   font: inherit;
+}

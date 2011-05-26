@@ -8,6 +8,7 @@ rules = [
     Rule('/case/create', handler='applicant.CreateCaseHandler'),
     Rule('/case/details/<int:id>', handler='applicant.CaseDetailsHandler'),
     Rule('/case/submit/<int:id>', handler='applicant.CaseSubmitHandler'),
-    Rule('/document/serve/<string:key>', handler='document.DownloadHandler'),
+    Rule('/document/serve/<string:key>/<string:filename>',
+         handler='document.DownloadHandler'),
     Rule('/document/upload/<int:id>', handler='document.UploadHandler'),
 ]

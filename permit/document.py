@@ -73,7 +73,7 @@ class DownloadHandler(RequestHandler, Jinja2Mixin,
                       tipfy_blobstore.BlobstoreDownloadMixin):
     middleware = [SessionMiddleware()]
 
-    def get(self, key):
+    def get(self, key, filename):
         """Download a document."""
         user = models.User.get_by_email(self.session.get('email'))
         if not user:

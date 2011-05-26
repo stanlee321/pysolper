@@ -10,6 +10,7 @@
 """
 
 import datetime
+import urllib
 from google.appengine.ext import db
 from google.appengine.ext import blobstore
 import timesince
@@ -126,4 +127,6 @@ class CaseAction(db.Model):
     def download_url(self):
         if not self.upload:
             return ''
-        return '/document/serve/%s' % self.upload.key()
+        return '/document/serve/%s/%s' % (
+            urllib.quote(str(self.upload.key())),
+            urllib.quote(self.upload.filename))
