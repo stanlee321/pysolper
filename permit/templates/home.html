@@ -37,146 +37,78 @@ $(function() {
 {% endblock %}
 
 {% block content %}
-    <h1>Welcome to Solar Permitting for {{ main.jurisdiction|e }}</h1>
+<h1>Welcome to Solar Permitting for {{ main.jurisdiction|e }}</h1>
 
-    {% if user %}
-    {% if not user.role %}
-    <div class="login-box" id="login-choose-role">
-      <p>
-	You are logged in as <strong>{{ user.email|e }}</strong>
-	but your registration will be complete once you choose a role.
-      </p>
-      <form>
-      <select name="role">
-	{% for role in roles %}
-	<option value="{{ role }}">{{ role }}</option>
-	{% endfor %}
-      </select>
-      <br/>
-      <input type="submit" class="button" value="Continue" />
-      </form>
-    </div>
-    {% endif %}
-    {% else %}
-    <div class="login-box">
-      Sign in with your
-      <br/>
-      <strong>Email Address:</strong>
-      <form id="login-form" action="">
-	<span id="email-input-error" class="error">
-	  Invalid email address, please fix.
-	</span>
-	<input name="email" id="login-email" type="text" size="30" />
-	<input type="submit" class="button" value="Continue" />
-      </form>
-    </div>
-    {% endif %}
+{% if user %}
+{% if not user.role %}
+<div class="login-box" id="login-choose-role">
+  <p>
+    You are logged in as <strong>{{ user.email|e }}</strong>
+    but your registration will be complete once you choose a role.
+  </p>
+  <form>
+    <select name="role">
+      {% for role in roles %}
+      <option value="{{ role }}">{{ role }}</option>
+      {% endfor %}
+    </select>
+    <br/>
+    <input type="submit" class="button" value="Continue" />
+  </form>
+</div>
+{% endif %}
+{% else %}
+<div class="login-box">
+  Sign in with your
+  <br/>
+  <strong>Email Address:</strong>
+  <form id="login-form" action="">
+    <span id="email-input-error" class="error">
+      Invalid email address, please fix.
+    </span>
+    <input name="email" id="login-email" type="text" size="30" />
+    <input type="submit" class="button" value="Continue" />
+  </form>
+</div>
+{% endif %}
 
 <div>
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
-content content
+  <p>
+    Hello and welcome to the City of Light's online solar permitting
+    application. This application streamlines the solar permitting
+    process by moving to paperless submission and review and
+    implementing the
+    <a href="http://www.solarabcs.org/about/publications/reports/expedited-permit/index.html">
+      standards proposed by the Solar America Board for Codes and
+      Standards (Solar ABCs)
+    </a>.
+  </p>
+
+  <p>
+    This is a demo where you can log in as any role to try it out.
+    To begin, simply enter any email address and click Continue.
+    Then select your role, either:
+    <br/>
+    <ul>
+      <li>
+	<i>Permit Approver</i>
+	- The authorities having jurisdiction (AHJs), or municipalities and counties who must approve the solar installation.
+      </li>
+      <li>
+	<i>Applicant</i>
+	- The homeowner, installer or integrator who is filing for the permit and conducting the solar installation.
+      </li>
+    </ul>
+  </p>
+
+  <p>
+    For help, see the
+    <a href="https://sites.google.com/site/solarpermitcentral/">
+      Solar Permit Central
+    </a>
+    site.
+  </p>
+
 
 </div>
 

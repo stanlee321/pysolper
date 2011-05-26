@@ -1,4 +1,12 @@
 {% extends "base.html" %}
+
+{% block style %}
+<style>
+.start-description {
+  width: 600px;
+}
+</style>
+{% endblock %}
 {% block script %}
 <script>
   $(function() {
@@ -23,17 +31,20 @@
   eventually approved by {{ main.jurisdiction|e }}.
 </p>
 
-<div id="start-new-case" class="panel">
-  To start a new case, first enter an address in {{ main.jurisdiction|e }}.
-  <br/>
+<div id="start-new-case" class="panel full-width">
   <form action="/case/create" method="GET">
-  <input type="text" name="address" size=40>
+  <div class="start-description">
+    To start a new case, first enter an address in {{ main.jurisdiction|e }}
+  like <b>123 Elm Street</b>.
+  It's not necessary to add city/state/zip portion.
+  </div>
+  <input type="text" name="address" size=120>
   <input type="submit" id="start-new-case-button" class="button"
 	 value="Start a new Case">
   </form>
 </div>
 
-<div id="cases-in-progress" class="list-panel">
+<div id="cases-in-progress" class="panel full-width">
   You have {{ cases|length }} case{% if cases|length - 1 %}s{% endif %}.
 
   {% if cases %}
