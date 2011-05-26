@@ -140,7 +140,7 @@ var c;
     {% if user.can_upload %}
     user can upload
     {% endif %}
-    {% if user.can_upload %}
+    {% if user.can_upload and case.applicant_can_edit %}
     <div class="action-form">
       <form class="upload-form"
 	    action="{{ upload_url }}" method="POST" enctype="multipart/form-data">
