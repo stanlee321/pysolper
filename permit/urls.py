@@ -14,4 +14,5 @@ rules = [
     Rule('/approver/home', handler='approver.HomeHandler'),
     Rule('/approver/case/<int:id>', handler='approver.CaseReviewHandler'),
     Rule('/case/approve/<int:id>', handler='approver.CaseApproveHandler'),
+    Rule('/case/comment/<int:id>', handler='approver.CaseCommentHandler'),
 ]

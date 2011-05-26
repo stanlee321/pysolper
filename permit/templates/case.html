@@ -223,6 +223,23 @@ var c;
 
 {% if user.can_approve %}
 <div class="case-detail panel">
+  <div class="panel-title">Needs Work</div>
+  <form class="action-form" id="comment-form"
+	action="/case/comment/{{ case.key().id() }}" method="POST">
+    <div>Note for applicant</div>
+    <textarea name="notes" rows=5></textarea>
+    <br/>
+    <input type="submit" class="action button approval-button"
+	   value="Request Changes">
+  </form>
+  <p class="action-instruction">
+    When this case is up to date and all documentation is complete, you can
+    approve the case.
+  </p>
+  <div style="clear: both"></div>
+</div>
+
+<div class="case-detail panel">
   <div class="panel-title">Approval</div>
   <form class="action-form" id="approval-form"
 	action="/case/approve/{{ case.key().id() }}" method="POST">

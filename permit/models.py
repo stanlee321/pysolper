@@ -58,10 +58,10 @@ class User(db.Model):
         return self.role == 'Permit Approver'
 
     def __eq__(self, other):
-        return self.email == other.email
+        return other is not None and self.email == other.email
 
     def __ne__(self, other):
-        return self.email != other.email
+        return other is None or self.email != other.email
 
 
 class Case(db.Model):
@@ -125,6 +125,13 @@ class Case(db.Model):
         self.state = CASE_STATES['approved']
         self.put()
         action = CaseAction.make(action='Approve', case=self, actor=actor,
+	                    notes=notes)
+        action.put()
+
+    def comment(self, actor, notes):
+        self.state = CASE_STATES['needs_work']
+        self.put()
+        action = CaseAction.make(action='Comment', case=self, actor=actor,
 	                    notes=notes)
         action.put()
 

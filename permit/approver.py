@@ -59,6 +59,23 @@ class CaseApproveHandler(RequestHandler, Jinja2Mixin):
         return self.redirect('/approver/home')
 
 
+class CaseCommentHandler(RequestHandler, Jinja2Mixin):
+    middleware = [SessionMiddleware()]
+
+    def post(self, id):
+        """Comment on a case."""
+        user = models.User.get_by_email(self.session.get('email'))
+        if not user or not user.can_approve:
+            return self.redirect('/')
+
+        notes = self.request.form.get('notes')
+        case = models.Case.get_by_id(id)
+        case.comment(user, notes)
+
+        return self.redirect('/approver/home')
+
+
+
 class CaseReviewHandler(RequestHandler, Jinja2Mixin):
     middleware = [SessionMiddleware()]
 
