@@ -51,7 +51,7 @@ class CreateCaseHandler(RequestHandler, Jinja2Mixin):
         # TODO: add a form!
         case = models.Case.create(
             owner = user,
-            address = '123 Elm Street',
+            address = self.request.args.get('address')
             )
 
         return self.redirect('/case/details/%s' % case.key().id())

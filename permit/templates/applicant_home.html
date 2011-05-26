@@ -23,10 +23,14 @@
   eventually approved by {{ main.jurisdiction|e }}.
 </p>
 
-<div id="start-new-case">
-  <a href="/case/create" id="start-new-case-button" class="button">
-    Start a new Case
-  </a>
+<div id="start-new-case" class="panel">
+  To start a new case, first enter an address
+  <br/>
+  <form action="/case/create" method="GET">
+  <input type="text" name="address" size=40>
+  <input type="submit" id="start-new-case-button" class="button"
+	 value="Start a new Case">
+  </form>
 </div>
 
 <div id="cases-in-progress" class="list-panel">
