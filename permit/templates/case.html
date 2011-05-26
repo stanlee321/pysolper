@@ -23,6 +23,7 @@ div.action span.timestamp {
 }
 .panel-title {
   font-weight: bold;
+  margin-bottom: 10px;
 }
 .action-form {
   float: right;
@@ -36,13 +37,12 @@ div.action span.timestamp {
 .action-form div {
   margin-bottom: 0;
 }
-
 .action-instruction {
   margin-right: 300px;
 }
-
 .uploadable {
-  min-height: 300px;
+  border-top: 1px solid #CCC;
+  min-height: 150px;
 }
 input.disabled {
   background-color: #ccc;
@@ -119,6 +119,9 @@ var c;
 </div>
 
 <div class="case-detail panel">
+  <div class="panel-title">
+    Required Documents
+  </div>
   {% for purpose in uploadables %}
   <div class="uploadable">
     <div class="panel-title">
@@ -134,11 +137,13 @@ var c;
       <input type="submit" name="upload" value="Upload" disabled
 	 class="action-form button upload-button">
     </form>
-    <a href="/examples/{{ purpose }}.png">
+    <a href="/examples/{{ purpose }}.png" target="_blank">
       Start with an empty example
     </a>
     <p>
     {% if case.get_document(purpose) %}
+    {{ case.get_document(purpose).upload.filename }}
+    <br/>
     Uploaded
     {{ case.get_document(purpose).timesince }} ago
     by {{ case.get_document(purpose).actor.email }}
@@ -148,7 +153,7 @@ var c;
     <pre>{{ case.get_document(purpose).notes }}</pre>
     {% endif %}
     {% if case.get_document(purpose).download_url %}
-    <a href="{{ case.get_document(purpose).download_url }}">
+    <a href="{{ case.get_document(purpose).download_url }}" target="_blank">
       Download Latest Version
     </a>
     {% endif %}
