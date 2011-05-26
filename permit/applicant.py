@@ -66,9 +66,9 @@ class CaseSubmitHandler(RequestHandler, Jinja2Mixin):
         if not user:
             return self.redirect('/')
 
-        note = self.request.form.get('note')
+        notes = self.request.form.get('notes')
         case = models.Case.get_by_id(id)
-        case.submit(user, note)
+        case.submit(user, notes)
 
         return self.redirect('/applicant/home')
 

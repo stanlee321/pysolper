@@ -23,7 +23,7 @@ class HomeHandler(RequestHandler, Jinja2Mixin):
     def get(self):
         """Home Page for an Approver."""
         user = models.User.get_by_email(self.session.get('email'))
-        if not user or user.role != 'Permit Approver':
+        if not user or not user.can_approve:
             return self.redirect('/')
 
         cases = models.Case.query_submitted()
@@ -45,12 +45,12 @@ class CaseApproveHandler(RequestHandler, Jinja2Mixin):
     def post(self, id):
         """Approve a case."""
         user = models.User.get_by_email(self.session.get('email'))
-        if not user:
+        if not user or not user.can_approve:
             return self.redirect('/')
 
-        note = self.request.form.get('note')
+        notes = self.request.form.get('notes')
         case = models.Case.get_by_id(id)
-        case.approve(user, note)
+        case.approve(user, notes)
 
         return self.redirect('/approver/home')
 
@@ -61,7 +61,7 @@ class CaseDetailsHandler(RequestHandler, Jinja2Mixin):
     def get(self, id):
         """Show details of a case and allow editing it."""
         user = models.User.get_by_email(self.session.get('email'))
-        if not user:
+        if not user or not user.can_approve:
             return self.redirect('/')
 
         case = models.Case.get_by_id(id)

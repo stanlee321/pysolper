@@ -196,7 +196,7 @@ var c;
   <form class="action-form" id="approval-form"
 	action="/case/submit/{{ case.key().id() }}" method="POST">
     <div>Note for approver (optional)</div>
-    <textarea id="notes" rows=5></textarea>
+    <textarea name="notes" rows=5></textarea>
     <br/>
     <input type="submit" class="action button approval-button"
 	   value="Submit for approval">
@@ -227,7 +227,7 @@ var c;
   <form class="action-form" id="approval-form"
 	action="/case/approve/{{ case.key().id() }}" method="POST">
     <div>Note for applicant (optional)</div>
-    <textarea id="notes" rows=5></textarea>
+    <textarea name="notes" rows=5></textarea>
     <br/>
     <input type="submit" class="action button approval-button"
 	   value="Approve">
