@@ -30,7 +30,7 @@
       sortList: [[5, 1]]
     });
     $('#address').keyup(enableStartCaseForm);
-    $('#address').paste(enableStartCaseForm);
+    $('#address').bind('paste', enableStartCaseForm);
     $('#start-new-case-form').submit(function() {
       if ($('#start-new-case-button').button("option", "disabled")) {
         return false;
