@@ -56,6 +56,10 @@ var c;
   $(function() {
     $('.button').button();
     $('.upload-button').button({disabled: true});
+    {% if case.submit_blockers %}
+    $('.approval-button').button({disabled: true});
+    {% endif %}
+
     $('.upload-form input.upload-file').change(
       function(event) {
         var button = $(this).nextAll('input');
@@ -156,7 +160,7 @@ var c;
   {% endfor %}
 </div>
 
-{% if case.visible_state != 'Submitted' %}
+{% if not case.submitted %}
 <div class="case-detail panel">
   <div class="panel-title">Approval</div>
   <form class="action-form"
@@ -165,12 +169,25 @@ var c;
     <br/>
     <textarea id="notes" cols=33 rows=4></textarea>
     <br/>
-    <input type="submit" class="action button" value="Submit for approval">
+    <input type="submit" class="action button approval-button"
+	   value="Submit for approval">
   </form>
   <p class="action-instruction">
     When this case is up to date and all documentation is complete, you can
     submit the case for approval.
   </p>
+  {% if case.submit_blockers %}
+  <p>
+  Can not submit yet:
+  <ul>
+  {% for blocker in case.submit_blockers %}
+  <li>{{ blocker }}</li>
+  {% endfor %}
+  </ul>
+  </p>
+  {% else %}
+  Case is complete - ready to submit!
+  {% endif %}
   <div style="clear: both"></div>
 </div>
 {% endif %}

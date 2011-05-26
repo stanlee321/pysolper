@@ -76,6 +76,18 @@ class Case(db.Model):
     def last_modified(self):
         return datetime.datetime.now() - self.latest_action.timestamp
 
+    @property
+    def submitted(self):
+        return self.state == CASE_STATES[1]
+
+    @property
+    def submit_blockers(self):
+        blockers = []
+        for purpose in PURPOSES:
+            if not self.get_document(purpose):
+                blockers.append('Missing %s' % purpose)
+        return blockers
+
     def get_document(self, purpose):
         q= CaseAction.query_updates_by_case(self).filter('purpose =', purpose)
         q.order('-timestamp')
