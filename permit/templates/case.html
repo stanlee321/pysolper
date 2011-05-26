@@ -176,7 +176,7 @@ var c;
       {% endif %}
 
       <p>
-	<a href="/examples/{{ purpose }}.png" target="_blank">
+	<a href="/examples/{{ purpose|replace(" ", "_") }}.png" target="_blank">
 	  Get an empty example
 	</a>
       </p>
