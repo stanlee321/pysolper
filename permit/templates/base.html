@@ -16,6 +16,8 @@
     {% endblock %}
   </head>
   <body>
+    <div class="body-border">
+    <div class="body-border">
     <div class="header">
       <span class="login-info">
 	{% if user %}
@@ -28,8 +30,19 @@
 	Please log in below
 	{% endif %}
       </span>
+      <a href="/">Home</a>
       {% block breadcrumb %}
       {% endblock %}
+      <div class="app-name">
+      Solar Permitting Demo
+      </div>
+    </div>
+    <div class="title">
+      <div class="title-text">
+      {% block title %}
+      title
+      {% endblock %}
+      </div>
     </div>
     <div class="content">
     {% block content %}
@@ -37,9 +50,12 @@
     {% endblock %}
     </div>
     <div class="footer">
+      Solar Permitting Demo
       <span class="copyright">
 	&copy; Copyright 2011 Google, Inc.
       </span>
+    </div>
+    </div>
     </div>
   </body>
 </html>

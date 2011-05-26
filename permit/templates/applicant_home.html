@@ -2,8 +2,12 @@
 
 {% block style %}
 <style>
-.start-description {
-  width: 600px;
+#start-new-case-form {
+  margin: 0;
+}
+#start-new-case-form input#address,
+#start-new-case-form .start-description {
+  width: 70%;
 }
 </style>
 {% endblock %}
@@ -21,24 +25,24 @@
   });
 </script>
 {% endblock %}
-
+{% block title %}
+<h1>My Permit Applications</h1>
+{% endblock %}
 {% block content %}
-<h1>Welcome to Solar Permitting for {{ main.jurisdiction|e }}</h1>
-
 <p>
   As a solar permit applicant, you can start new cases, submit a case for
   approval, comment and resubmit as necesary until your case is
   eventually approved by {{ main.jurisdiction|e }}.
 </p>
 
-<div id="start-new-case" class="panel full-width">
-  <form action="/case/create" method="GET">
+<div class="panel">
+  <form id="start-new-case-form" action="/case/create" method="GET">
   <div class="start-description">
     To start a new case, first enter an address in {{ main.jurisdiction|e }}
   like <b>123 Elm Street</b>.
   It's not necessary to add city/state/zip portion.
   </div>
-  <input type="text" name="address" size=120>
+  <input type="text" id="address" name="address">
   <input type="submit" id="start-new-case-button" class="button"
 	 value="Start a new Case">
   </form>

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block breadcrumb %}
-<a href="/applicant/home">Home</a>
+&gt; Application: {{ case.address }}
 {% endblock %}
 {% block style %}
 <style>
@@ -75,12 +75,10 @@ var c;
   });
 </script>
 {% endblock %}
-
+{% block title %}
+<h1>Application In Progress</h1>
+{% endblock %}
 {% block content %}
-<div>
-  <h1>Application: {{ case.address|e }}</h1>
-</div>
-
 
 <div id="action-history" class="panel">
   <div class="panel-title">Activity Log</div>
@@ -106,17 +104,27 @@ var c;
 </div>
 
 <div class="case-detail panel">
+  <div class="panel-title">
+    Basic Information
+  </div>
   <div>
+    <span class="label">Address</span>
     {{ case.address|e }}
   </div>
   <div>
-    Created: {{ case.creation_date|e }}
+    <span class="label">Created</span>
+    {{ case.creation_date.strftime('%d %b, %Y')|e }}
   </div>
   <div>
-    Status: {{ case.visible_state|e }}
+    <span class="label">Applicant</span>
+    {{ case.owner.email|e }}
   </div>
   <div>
-    TODO: more info about the case
+    <span class="label">Status</span>
+    {{ case.visible_state|e }}
+  </div>
+  <div>
+    TODO: more info about the case, Solar ABC page 1 form
   </div>
 </div>
 

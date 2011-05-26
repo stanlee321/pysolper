@@ -12,9 +12,12 @@ display: none;
    border: 2px solid blue;
    text-align: center;
    vertical-align: middle;
-   margin: 10px;
+   margin: 20px;
    padding: 20px;
    font-size: 20px;
+}
+#login-email {
+  width: 90%
 }
 </style>
 {% endblock %}
@@ -35,9 +38,11 @@ $(function() {
 });
 </script>
 {% endblock %}
+{% block title %}
+<h1>Welcome to Solar Permitting for {{ main.jurisdiction|e }}</h1>
+{% endblock %}
 
 {% block content %}
-<h1>Welcome to Solar Permitting for {{ main.jurisdiction|e }}</h1>
 
 {% if user %}
 {% if not user.role %}
@@ -66,7 +71,7 @@ $(function() {
     <span id="email-input-error" class="error">
       Invalid email address, please fix.
     </span>
-    <input name="email" id="login-email" type="text" size="30" />
+    <input name="email" id="login-email" type="text" />
     <input type="submit" class="button" value="Continue" />
   </form>
 </div>
@@ -91,12 +96,12 @@ $(function() {
     <br/>
     <ul>
       <li>
-	<i>Permit Approver</i>
-	- The authorities having jurisdiction (AHJs), or municipalities and counties who must approve the solar installation.
-      </li>
-      <li>
 	<i>Applicant</i>
 	- The homeowner, installer or integrator who is filing for the permit and conducting the solar installation.
+      </li>
+      <li>
+	<i>Permit Approver</i>
+	-  Employee of the authority having jurisdiction (AHJs), or municipalities and counties who must approve the solar installation.
       </li>
     </ul>
   </p>
