@@ -21,10 +21,6 @@ div.action {
 div.action span.timestamp {
   float: right;
 }
-.panel-title {
-  font-weight: bold;
-  margin-bottom: 10px;
-}
 .action-form {
   float: right;
   min-width: 220px;
@@ -46,20 +42,10 @@ div.action span.timestamp {
 .action-instruction {
   margin-right: 300px;
 }
-.uploadable {
+div.uploadable {
   border-top: 1px solid #CCC;
   min-height: 150px;
   margin-top: 20px;
-}
-input.disabled {
-  background-color: #ccc;
-  color: #aaa;
-}
-.disabled {
-  opacity: 0.35;
-}
-.detail {
-  font-size: 0.8em;
 }
 </style>
 {% endblock %}
@@ -197,7 +183,7 @@ var c;
   <form class="action-form" id="approval-form"
 	action="/case/submit/{{ case.key().id() }}" method="POST">
     <div>Note for approver (optional)</div>
-    <textarea id="notes" rows=3></textarea>
+    <textarea id="notes" rows=5></textarea>
     <br/>
     <input type="submit" class="action button approval-button"
 	   value="Submit for approval">

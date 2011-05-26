@@ -42,6 +42,10 @@ table span.tablesorthack {
    margin: 10px;
    padding: 10px;
 }
+.panel-title {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
 table.tablesorter thead th.header {
    padding-right: 20px;
 }
@@ -53,4 +57,10 @@ table.tablesorter {
 }
 input {
    font: inherit;
+}
+.disabled {
+  opacity: 0.35;
+}
+.detail {
+  font-size: 0.8em;
 }
