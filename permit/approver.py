@@ -26,13 +26,15 @@ class HomeHandler(RequestHandler, Jinja2Mixin):
         if not user or not user.can_approve:
             return self.redirect('/')
 
-        cases = models.Case.query_submitted()
-        cases = list(cases.order('state').run())
-        cases.sort(key=lambda c: c.last_modified, reverse=True)
+        open_cases = models.Case.query_submitted()
+        open_cases = list(open_cases.order('state').run())
+        open_cases.sort(key=lambda c: c.last_modified, reverse=True)
 
         context = {
             'user': user,
-            'cases': cases,
+            'open_cases': open_cases,
+            'num_other_cases': 2,
+	    'my_cases': [],
         }
         context.update(config.config)
 

@@ -26,12 +26,21 @@
   As a solar permit approver, you can comment on applications and approve them.
 </p>
 
-<div id="cases-in-progress" class="panel full-width">
-  There are {{ cases|length }} case{% if cases|length - 1 %}s{% endif %}
-  awaiting review.
+<div id="cases-under-review" class="panel full-width">
+  {% if my_cases %}
+  There are {{ my_cases|length }} case{% if my_cases|length - 1 %}s{% endif %}
+  that you are currently in the process of reviewing.
+  {% else %}
+    You are not currently reviewing any case.
+  {% endif %}
+</div>
 
-  {% if cases %}
-  <table class="tablesorter" id="cases">
+<div id="cases-in-progress" class="panel full-width">
+
+  {% if open_cases %}
+  There are {{ open_cases|length }} case{% if open_cases|length - 1 %}s{% endif %}
+  waiting to be placed under review.
+  <table class="tablesorter" id="open_cases">
     <thead>
       <tr>
 	<th>
@@ -57,7 +66,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for case in cases %}
+      {% for case in open_cases %}
       <tr>
 	<td>
 	  {{ case.address|e }}
@@ -100,6 +109,18 @@
       {% endfor %}
     </tbody>
   </table>
+  {% else %}
+    There are currently no cases waiting to be placed under review.
   {% endif %}
 </div>
+
+<div id="cases-other-approvers" class="panel full-width">
+  {% if num_other_cases %}
+  There are {{ num_other_cases }} case{% if num_other_cases - 1 %}s{% endif %}
+  that are currently being reviewed by other approvers.
+  {% else %}
+    There are currently no cases being reviewed by other approvers.
+  {% endif %}
+</div>
+
 {% endblock %}
