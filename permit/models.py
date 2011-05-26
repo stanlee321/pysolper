@@ -18,10 +18,20 @@ import timesince
 USER_ROLES = ('Applicant', 'Permit Approver')
 # Cases may be ordered lexicographically by state, the first three characters
 # of the state string will be stripped before display.
-CASE_STATES = ('00 Incomplete', '10 Submitted',
-               '20 Commented', '30 Approved', '40 Denied')
-CASE_ACTIONS = ('Create', 'Update',
-                'Submit', 'Comment', 'Approve', 'Deny')
+
+CASE_STATES = {'incomplete': '00 Incomplete',
+               'submitted': '10 Submitted For Review',
+	       'being_examined': '20 Review Under Way',
+	       'needs_work': '30 Needs Work',
+	       'approved': '40 Approved',
+	       'denied': '50 Rejected',
+	      }
+
+APPLICANT_EDITABLE = set(CASE_STATES[x]
+                         for x in 'incomplete submitted needs_work'.split())
+
+CASE_ACTIONS = ('Create', 'Update', 'Submit',
+                'Review', 'Reassign', 'Comment', 'Approve', 'Deny')
 
 PURPOSES = (
     'Site Diagram',
@@ -51,7 +61,7 @@ class Case(db.Model):
     address = db.StringProperty(required=True)
     creation_date = db.DateProperty(required=True, auto_now_add=True)
     owner = db.ReferenceProperty(User, required=True)
-    state = db.StringProperty(required=True, choices=CASE_STATES)
+    state = db.StringProperty(required=True, choices=CASE_STATES.values())
     email_listeners = db.StringListProperty()
 
     @classmethod
@@ -62,25 +72,25 @@ class Case(db.Model):
     @classmethod
     def query_submitted(cls):
         """Returns a db.Query."""
-        return cls.all().filter('state = ', CASE_STATES[1])
+        return cls.all().filter('state = ', CASE_STATES['submitted'])
 
     @classmethod
     def create(cls, owner, **k):
-        case = cls(state=CASE_STATES[0], owner=owner, **k)
+        case = cls(state=CASE_STATES['incomplete'], owner=owner, **k)
         case.put()
         first_action = CaseAction(action='Create', case=case, actor=owner)
         first_action.put()
         return case
 
     def submit(self, actor, notes):
-        self.state = CASE_STATES[1]
+        self.state = CASE_STATES['submitted']
         self.put()
         action = CaseAction(action='Submit', case=self, actor=actor,
 	                    notes=notes)
         action.put()
 
     def approve(self, actor, notes):
-        self.state = CASE_STATES[3]
+        self.state = CASE_STATES['approved']
         self.put()
         action = CaseAction(action='Approve', case=self, actor=actor,
 	                    notes=notes)
@@ -99,8 +109,8 @@ class Case(db.Model):
         return datetime.datetime.now() - self.latest_action.timestamp
 
     @property
-    def needs_approval(self):
-        return self.state in (CASE_STATES[0], CASE_STATES[2])
+    def applicant_can_edit(self):
+        return self.state in APPLICANT_EDITABLE
 
     @property
     def submit_blockers(self):

@@ -190,7 +190,7 @@ var c;
   {% endfor %}
 </div>
 
-{% if case.needs_approval %}
+{% if case.applicant_can_edit %}
 <div class="case-detail panel">
   <div class="panel-title">Approval</div>
   <form class="action-form" id="approval-form"
