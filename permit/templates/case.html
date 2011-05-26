@@ -190,7 +190,7 @@ var c;
   {% endfor %}
 </div>
 
-{% if case.applicant_can_edit %}
+{% if case.applicant_can_edit and user.role == 'Applicant' %}
 <div class="case-detail panel">
   <div class="panel-title">Approval</div>
   <form class="action-form" id="approval-form"

@@ -8,6 +8,7 @@
     :copyright: 2011 by Google, Inc.
     :license: Apache 2.0, see LICENSE for more details.
 """
+import logging
 from google.appengine.ext import blobstore
 from tipfy.app import Response
 from tipfy.handler import RequestHandler
@@ -27,7 +28,8 @@ class HomeHandler(RequestHandler, Jinja2Mixin):
             return self.redirect('/')
 
         cases = models.Case.query_by_owner(user)
-        cases = list(cases.order('state').run())
+        cases = list(cases.order('state'))
+        logging.debug(cases)
         cases.sort(key=lambda c: c.last_modified, reverse=True)
 
         context = {
