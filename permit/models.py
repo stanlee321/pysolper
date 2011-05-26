@@ -25,7 +25,7 @@ CASE_ACTIONS = ('Create', 'Update',
 PURPOSES = (
     'Site Diagram',
     'Electrical Diagram',
-    'Equipment Schedule'
+    'Diagram Notes'
     )
 
 class User(db.Model):

@@ -36,6 +36,9 @@ handlers:
 - url: /static
   static_dir: static
 
+- url: /examples
+  static_dir: examples
+
 - url: /_ah/queue/deferred
   script: main.py
   login: admin

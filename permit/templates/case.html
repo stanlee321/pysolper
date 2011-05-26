@@ -44,19 +44,29 @@ div.action span.timestamp {
 .uploadable {
   min-height: 300px;
 }
+input.disabled {
+  background-color: #ccc;
+  color: #aaa;
+}
 </style>
 {% endblock %}
 {% block script %}
 <script>
+var c;
   $(function() {
     $('.button').button();
-    $('table.tablesorter').tablesorter({
-      headers: {
-        4: {sorter: 'text'},
-        5: {sorter: false}
-      },
-      sortList: [[4, 1]]
-    });
+    $('.upload-button').button({disabled: true});
+    $('.upload-form input.upload-file').change(
+      function(event) {
+        var button = $(this).nextAll('input');
+        c = event.currentTarget;
+        b = button;
+        if (event.currentTarget.value != '') {
+          button.button( "option", "disabled", false );
+        } else {
+          button.button( "option", "disabled", true );
+        }
+      });
   });
 </script>
 {% endblock %}
@@ -105,26 +115,24 @@ div.action span.timestamp {
 </div>
 
 <div class="case-detail panel">
-  <div class="panel-title">Tables and Diagrams</div>
   {% for purpose in uploadables %}
   <div class="uploadable">
     <div class="panel-title">
       {{ purpose }}
     </div>
-    <form class="action-form"
+    <form class="upload-form action-form"
 	  action="{{ upload_url }}" method="POST" enctype="multipart/form-data">
       <input type="hidden" name="purpose" value="{{ purpose }}">
-      Notes:
-      <br/>
-      <textarea name="notes" rows=5 cols=40></textarea>
-      <br/>
       Upload File:
-      <input type="file" name="file">
       <br/>
-      <input type="submit" value="Upload"
-	 class="action-form button">
+      <input type="file" name="file" class="upload-file">
+      <br/>
+      <input type="submit" name="upload" value="Upload" disabled
+	 class="action-form button upload-button">
     </form>
-    <a href="#">Start with an empty example</a>
+    <a href="/examples/{{ purpose }}.png">
+      Start with an empty example
+    </a>
     <p>
     {% if case.get_document(purpose) %}
     Uploaded
@@ -136,7 +144,9 @@ div.action span.timestamp {
     <pre>{{ case.get_document(purpose).notes }}</pre>
     {% endif %}
     {% if case.get_document(purpose).download_url %}
-    <a href="{{ case.get_document(purpose).download_url }}">Download</a>
+    <a href="{{ case.get_document(purpose).download_url }}">
+      Download Latest Version
+    </a>
     {% endif %}
     {% else %}
       Missing.
