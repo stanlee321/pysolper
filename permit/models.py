@@ -9,17 +9,24 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 
+# standard Python library imports
 import datetime
 import logging
 import urllib
+
+# App Engine imports
 from google.appengine.ext import db
 from google.appengine.ext import blobstore
+from django.utils import simplejson
+
+# local imports
 import timesince
 
+# roles the system distinguishes for each user
 USER_ROLES = ('Applicant', 'Permit Approver')
-# Cases may be ordered lexicographically by state, the first three characters
-# of the state string will be stripped before display.
 
+# Cases may be ordered lexicographically by state, the first three characters
+# of the state string (value in the dict) will be stripped before display.
 CASE_STATES = {'incomplete': '00 Incomplete',
                'submitted': '10 Submitted For Review',
 	       'under_review': '20 Review Under Way',
@@ -28,12 +35,15 @@ CASE_STATES = {'incomplete': '00 Incomplete',
 	       'denied': '50 Rejected',
 	      }
 
+# the case states in which an applicant can upload files and/or notes
 APPLICANT_EDITABLE = set(CASE_STATES[x]
                          for x in 'incomplete submitted needs_work'.split())
 
+# the kind of actions that cause a case to change
 CASE_ACTIONS = ('Create', 'Update', 'Submit',
                 'Review', 'Reassign', 'Comment', 'Approve', 'Deny')
 
+# documents an applicant must upload to submit a case for approver review
 PURPOSES = (
     'Site Diagram',
     'Electrical Diagram',
@@ -42,7 +52,12 @@ PURPOSES = (
 
 
 class User(db.Model):
+    """A user of this permiting application."""
+    # TODO: add authentication mechanisms / tokens
+    # email works as the "primary key" to identify a user
     email = db.EmailProperty(required=True)
+    # application logic ensures a role gets assigned when a new user logs in
+    # for the first time, but the User object is first created w/o a role
     role = db.StringProperty(choices=USER_ROLES, required=False)
 
     @classmethod
@@ -65,31 +80,32 @@ class User(db.Model):
 
 
 class Case(db.Model):
+    """A project for which approval is requested."""
     address = db.StringProperty(required=True)
     creation_date = db.DateProperty(required=True, auto_now_add=True)
     owner = db.ReferenceProperty(User, required=True)
     state = db.StringProperty(required=True, choices=CASE_STATES.values())
-    email_listeners = db.StringListProperty()
 
     @classmethod
     def query_by_owner(cls, user):
-        """Returns a db.Query."""
+        """Returns a db.Query for all cases owned by this user."""
         return cls.all().filter('owner = ', user)
 
     @classmethod
     def query_under_review(cls):
-       return cls.all().filter('state = ', CASE_STATES['under_review'])
+        """Returns a db.Query for all cases under review."""
+        return cls.all().filter('state = ', CASE_STATES['under_review'])
 
     @classmethod
     def query_submitted(cls):
-        """Returns a db.Query."""
+        """Returns a db.Query for all cases in the submitted state."""
         return cls.all().filter('state = ', CASE_STATES['submitted'])
 
     @classmethod
     def reviewed_by(cls, user):
+       """Returns two lists: cases being reviewed by the user vs by other users."""
        these_cases, other_cases = [], []
-       q = cls.query_under_review()
-       for case in q.run():
+       for case in cls.query_under_review().run():
            if case.reviewer == user:
 	       these_cases.append(case)
 	   else:
@@ -98,67 +114,73 @@ class Case(db.Model):
 
     @classmethod
     def create(cls, owner, **k):
+	"""Creates and returns a new case."""
         case = cls(state=CASE_STATES['incomplete'], owner=owner, **k)
         case.put()
-        first_action = CaseAction.make(action='Create', case=case, actor=owner)
-        first_action.put()
+        CaseAction.make(action='Create', case=case, actor=owner)
         return case
 
     def submit(self, actor, notes):
+	"""Submits the case for review."""
         self.state = CASE_STATES['submitted']
         self.put()
-        action = CaseAction.make(action='Submit', case=self, actor=actor,
-	                    notes=notes)
-        action.put()
+        CaseAction.make(action='Submit', case=self, actor=actor, notes=notes)
 
     def review(self, approver):
+	"""Assigns the case for review by the given approver."""
 	previous_reviewer = self.reviewer
 	if previous_reviewer == approver:
+	    # case was already under review by the given approver, no-op
 	    return
 	# reviewer assignment or change requires actual action, state change
         self.state = CASE_STATES['under_review']
 	self.put()
-	action = CaseAction.make(action='Review', case=self, actor=approver)
-	action.put()
+	CaseAction.make(action='Review', case=self, actor=approver)
 
     def approve(self, actor, notes):
+	"""Marks the case as approved."""
         self.state = CASE_STATES['approved']
         self.put()
-        action = CaseAction.make(action='Approve', case=self, actor=actor,
-	                    notes=notes)
-        action.put()
+        CaseAction.make(action='Approve', case=self, actor=actor, notes=notes)
 
     def comment(self, actor, notes):
+	"""Returns the case to the applicant requesting changes."""
         self.state = CASE_STATES['needs_work']
         self.put()
-        action = CaseAction.make(action='Comment', case=self, actor=actor,
-	                    notes=notes)
-        action.put()
+        CaseAction.make(action='Comment', case=self, actor=actor, notes=notes)
 
     @property
     def visible_state(self):
+	"""Returns the display form of this case's state."""
         return self.state[3:]
 
     @property
     def latest_action(self):
+	"""Returns the latest action recorded on this case."""
         return CaseAction.query_by_case(self).order('-timestamp').get()
 
     @property
     def last_modified(self):
+	"""Returns the timestamp at which this case was last modified."""
         return datetime.datetime.now() - self.latest_action.timestamp
 
     @property
     def applicant_can_edit(self):
+	"""True iff an applicant can currently modify this case."""
         return self.state in APPLICANT_EDITABLE
 
     @property
     def reviewer(self):
+       """Returns the case's current reviewer, or None."""
        if self.state != CASE_STATES['under_review']:
            return None
        return CaseAction.query_by_case(self, 'Review').get().actor
 
     @property
     def submit_blockers(self):
+        """Returns a list of the reasons the case may not yet be submitted (an
+          empty list if the case may be submitted).
+        """
         blockers = []
         for purpose in PURPOSES:
             if not self.get_document(purpose):
@@ -166,30 +188,37 @@ class Case(db.Model):
         return blockers
 
     def get_document(self, purpose):
+	"""Returns the document from this case for the given purpose."""
         q = CaseAction.query_by_case(self, 'Update').filter('purpose =', purpose)
         return q.get()
 
 
 class CaseAction(db.Model):
-    """Immutable once created."""
+    """Immutable once fully created (by the `make` classmethod)."""
     action = db.StringProperty(required=True, choices=CASE_ACTIONS)
     case = db.ReferenceProperty(Case, required=True)
     actor = db.ReferenceProperty(User, required=True)
-    purpose = db.StringProperty(required=False)
+    purpose = db.StringProperty(required=False, choices=PURPOSES)
     notes = db.TextProperty(required=False)
     upload = blobstore.BlobReferenceProperty(required=False)
     timestamp = db.DateTimeProperty(auto_now_add=True, required=True)
 
     @classmethod
     def make(cls, **k):
+	"""Create and put an action, and log information about it."""
+	# TODO: send info about the action to the latrop
         logging.info('********** ')
         logging.info('********** NEW ACTION: %s', k)
         logging.info('********** ')
-        return cls(**k)
-
+        action = cls(**k)
+	action.put()
 
     @classmethod
     def query_by_case(cls, case, action=None):
+        """Returns a db.Query for actions on the given case. If action is not None,
+	   only actions of the given kind are involved. The query is ordered by
+	   reverse timestamp (i.e., more recent actions first).
+	"""
         q = cls.all().filter('case = ', case)
 	if action is not None:
 	    q.filter('action = ', action)
@@ -197,16 +226,18 @@ class CaseAction(db.Model):
 
     @classmethod
     def upload_document_action(cls, case, purpose, user, blob_info, notes):
-        action = cls(action='Update', case=case, actor=user,
-	             purpose=purpose, notes=notes, upload=blob_info);
-        action.put()
+	"""Create and put an action of uploading a document and/or notes."""
+        cls.make(action='Update', case=case, actor=user, purpose=purpose,
+	         notes=notes, upload=blob_info)
 
     @property
     def timesince(self):
+	"""Readable form for this action's timestamp."""
         return timesince.timesince(self.timestamp)
 
     @property
     def download_url(self):
+	"""URL for downloading this action's document, or empty string if none."""
         if not self.upload:
             return ''
         return '/document/serve/%s/%s' % (
