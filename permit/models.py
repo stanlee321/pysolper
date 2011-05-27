@@ -10,16 +10,20 @@
 """
 
 # standard Python library imports
+import cgi
 import datetime
 import logging
 import urllib
+import urlparse
 
 # App Engine imports
 from google.appengine.ext import db
 from google.appengine.ext import blobstore
+from google.appengine.api import urlfetch
 from django.utils import simplejson
 
 # local imports
+import config
 import timesince
 
 # roles the system distinguishes for each user
@@ -223,7 +227,8 @@ class CaseAction(db.Model):
 
     def json(self):
         """Return JSON-serializable form."""
-	d = {'cls': 'Action', 'case': self.case.json(), 'actor': self.actor.json()}
+	d = {'cls': 'Action', 'action': self.action,
+	     'case': self.case.json(), 'actor': self.actor.json()}
 	if self.purpose:
 	    d['purpose'] = self.purpose
 	if self.notes:
@@ -236,14 +241,23 @@ class CaseAction(db.Model):
     @classmethod
     def make(cls, **k):
 	"""Create and put an action, and log information about it."""
-	# TODO: send info about the action to the latrop
         logging.info('********** ')
         logging.info('********** NEW ACTION: %s', k)
-        logging.info('********** JSON: %r',
-	             simplejson.dumps(k, skipkeys=True, cls=ModelEncoder))
-        logging.info('********** ')
         action = cls(**k)
 	action.put()
+	msg = simplejson.dumps(action, skipkeys=True, cls=ModelEncoder)
+        logging.info('********** JSON: %r', msg)
+        logging.info('********** ')
+	# send to the latrop
+	latrop_host = config.config['main']['latrop']
+	juris = config.config['main']['jurisdiction']
+	query = urllib.urlencode({'juris': juris, 'msg': msg})
+	url = urlparse.urlunparse(('http', latrop_host, '/action', '', query, ''))
+	result = urlfetch.fetch(url)
+	status = result.status_code
+	if status != 200:
+	    logging.warn('Status %s sending info to %s', status, latrop_host)
+        
 
     @classmethod
     def query_by_case(cls, case, action=None):
