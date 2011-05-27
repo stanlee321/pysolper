@@ -19,8 +19,10 @@ import models
 class AddActionHandler(RequestHandler, Jinja2Mixin):
     middleware = [SessionMiddleware()]
 
-    def get(self, id):
+    def get(self):
         """Add a message about an action."""
         juris = self.request.args.get('juris')
         msg = self.request.args.get('msg')
 	models.LatropMessage.create(juris, msg)
+
+        return 'OK'

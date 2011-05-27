@@ -81,7 +81,8 @@ class LatropMessage(JurisModel):
 
     @classmethod
     def create(cls, juris, msg):
-        return cls(juris=juris, msg=msg)
+        obj = cls(juris=juris, msg=msg)
+        obj.put()
 
 
 # TODO: the other models must be changed to be appropriate for the latrop
@@ -246,7 +247,6 @@ class CaseAction(JurisModel):
     purpose = db.StringProperty(required=False, choices=PURPOSES)
     notes = db.TextProperty(required=False)
     upload = blobstore.BlobReferenceProperty(required=False)
-    timestamp = db.DateTimeProperty(auto_now_add=True, required=True)
 
     def json(self):
         """Return JSON-serializable form."""

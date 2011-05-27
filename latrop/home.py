@@ -8,6 +8,7 @@
     :copyright: 2011 by Google, Inc.
     :license: Apache 2.0, see LICENSE for more details.
 """
+import logging
 from tipfy.app import Response
 from tipfy.handler import RequestHandler
 from tipfy.sessions import SessionMiddleware
@@ -21,7 +22,8 @@ class HomeHandler(RequestHandler, Jinja2Mixin):
 
     def get(self):
         """Home Page, show latest 5 messages."""
-        latest = models.LatropMessages.get_all().fetch(5)
+        latest = models.LatropMessage.get_all().fetch(5)
+        logging.info('Latest: %r', latest)
         context = {
             'latest': latest,
         }

@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Solar Permitting for {{ main.jurisdiction|e }}</title>
+    <title>Solar Permitting: nonportal (latrop) skeleton</title>
     <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/themes/sunny/jquery-ui.css" type="text/css" />
     <link rel="stylesheet" href="/static/tablesorter.blue/style.css" type="text/css" />
     <link rel="stylesheet" href="/static/permit.css" type="text/css" />
@@ -20,22 +20,11 @@
     <div class="body-border">
     <div class="body-border">
     <div class="header">
-      <span class="login-info">
-	{% if user %}
-	{{ user.email|e }}
-	|
-	{{ user.role|e }}
-	|
-	<a href="/?logout=1">Logout</a>
-	{% else %}
-	Please log in below
-	{% endif %}
-      </span>
       <a href="/">Home</a>
       {% block breadcrumb %}
       {% endblock %}
       <div class="app-name">
-      Solar Permitting Demo
+      Solar Permitting: nonportal (latrop) skeleton
       </div>
     </div>
     <div class="title">
