@@ -1,0 +1,105 @@
+body {
+   width: 950px;
+   font-size: 1.2em;
+   margin: 0;
+   padding: 0;
+   color: #4c3000;
+}
+body > div {
+   margin-left: 10px;
+   border: 4px solid #fefe00;
+}
+body > div > div {
+   border: 1px solid #fece2f;
+}
+body > div > div > div {
+   border: 4px solid #fefe00;
+}
+div.header, div.footer {
+   background-color: #fece2f;
+   padding: 0;
+   margin: 0;
+   clear: both;
+   font-size: 0.8em;
+   min-height: 10px;
+   padding-left: 10px;
+   padding-right: 10px;
+   padding-top: 2px;
+   padding-bottom: 2px;
+}
+div.header {
+  border-bottom: 10px solid #fefe00;
+}
+div.header .app-name {
+   text-align: center;
+   position: relative;
+   top: -19px;
+   font-weight: bold;
+   height: 0;
+}
+div.footer {
+  border-top: 10px solid #fefe00;
+   text-align: center;
+}
+div.header .login-info {
+   float: right;
+}
+div.content {
+   min-height: 70%
+}
+div.content p {
+  margin: 10px;
+}
+div.title {
+   height: 80px;
+   text-align: center;
+}
+div.title .logo {
+  float: left;
+}
+.error {
+   font-size: smaller;
+   color: red;
+}
+table span.tablesorthack {
+   display: none;
+}
+.list-panel {
+   border: 1px solid #ccc;
+   margin: 10px;
+   padding: 10px;
+   width: 90%;
+}
+.panel {
+   border: 1px solid #ccc;
+   margin: 10px;
+   padding: 10px;
+}
+.panel-title {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+table.tablesorter thead th.header {
+   padding-right: 20px;
+}
+table.tablesorter {
+   font-size: 0.8em;
+}
+.ui-button {
+   margin: 10px;
+}
+input {
+   font: inherit;
+}
+.disabled {
+  opacity: 0.35;
+}
+.detail {
+  font-size: 0.8em;
+}
+span.label {
+   color: #888;
+   width: 100px;
+   display: inline-block;
+   text-align: right;
+}

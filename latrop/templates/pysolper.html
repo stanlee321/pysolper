@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <title>{{ message|e }}</title>
+    <style type="text/css">
+      h1 {
+      color: #0099FF;
+      font-family: 'trebuchet ms', trebuchet, arial, sans-serif;
+      font-size: 72px;
+      text-align: center;
+      margin-top: 24px;
+      }
+      #denied {
+      display: none;
+      font-size: 50px;
+      color: red;
+      }
+    </style>
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/themes/sunny/jquery-ui.css" type="text/css" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js">
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js">
+    </script>
+    <script>
+      $(function() {
+        $('#submit').button().click(
+          function() { 
+            $('#denied').show();
+          });
+      });
+    </script>
+  </head>
+  <body>
+    <h1>{{ message|e }}</h1>
+    <a id="submit" href="#">Click here to submit a permit application</a>
+    <div id="denied">
+      DENIED
+      Try again in a few weeks, if not months!
+    </div>
+  </body>
+</html>

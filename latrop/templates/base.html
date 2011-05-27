@@ -1,0 +1,63 @@
+<html>
+  <head>
+    <title>Solar Permitting for {{ main.jurisdiction|e }}</title>
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/themes/sunny/jquery-ui.css" type="text/css" />
+    <link rel="stylesheet" href="/static/tablesorter.blue/style.css" type="text/css" />
+    <link rel="stylesheet" href="/static/permit.css" type="text/css" />
+    {% block style %}
+    {% endblock %}
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js">
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js">
+    </script>
+    <script src="/static/jquery.tablesorter.min.js">
+    </script>
+    {% block script %}
+    {% endblock %}
+  </head>
+  <body>
+    <div class="body-border">
+    <div class="body-border">
+    <div class="body-border">
+    <div class="header">
+      <span class="login-info">
+	{% if user %}
+	{{ user.email|e }}
+	|
+	{{ user.role|e }}
+	|
+	<a href="/?logout=1">Logout</a>
+	{% else %}
+	Please log in below
+	{% endif %}
+      </span>
+      <a href="/">Home</a>
+      {% block breadcrumb %}
+      {% endblock %}
+      <div class="app-name">
+      Solar Permitting Demo
+      </div>
+    </div>
+    <div class="title">
+      <div class="title-text">
+      {% block title %}
+      title
+      {% endblock %}
+      </div>
+    </div>
+    <div class="content">
+    {% block content %}
+    Oops!! need to override content block in base template.
+    {% endblock %}
+    </div>
+    <div class="footer">
+      Solar Permitting Demo
+      <span class="copyright">
+	&copy; Copyright 2011 Google, Inc.
+      </span>
+    </div>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>

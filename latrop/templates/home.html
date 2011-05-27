@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}
+<h1>Latest messages to Latrop</h1>
+{% endblock %}
+
+{% block content %}
+<p>
+(Hit refresh to see the latest messages).
+<p>
+<ul>
+{% for msg in latest %}
+<li>From: {{ msg.juris }} {{ msg.timesince }}:<br>{{ msg.msg }}
+{% endfor %}
+</ul>
+
+{% endblock %}

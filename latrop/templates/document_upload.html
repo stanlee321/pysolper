@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block breadcrumb %}
+<a href="/applicant/home">Home</a>
+{% endblock %}
+
+{% block content %}
+<div>
+  <h1>Upload Document To Case: {{ case.address|e }}</h1>
+</div>
+
+<form action={{ upload_url }} method="POST" enctype="multipart/form-data">
+Purpose:
+<input type="text" name="purpose">
+<br/>
+Notes:
+<textarea name="notes" rows=5 cols=40></textarea>
+<br/>
+Upload File:
+<input type="file" name="file">
+<br/>
+<input type="submit" name="submit" value="Submit">
+</form>
+
+{% endblock %}

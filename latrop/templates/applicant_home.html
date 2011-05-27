@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block style %}
+<style>
+#start-new-case-form {
+  margin: 0;
+}
+#start-new-case-form input#address,
+#start-new-case-form .start-description {
+  width: 70%;
+}
+</style>
+{% endblock %}
+{% block script %}
+<script>
+  function enableStartCaseForm() {
+    if ($('#address').val() == '') {
+      $('#start-new-case-button').button("option", "disabled", true);
+    } else {
+      $('#start-new-case-button').button("option", "disabled", false);
+    }
+  }
+  $(function() {
+    $('.button').button();
+    $('table.tablesorter').tablesorter({
+      headers: {
+        5: {sorter: 'text'},
+        6: {sorter: false}
+      },
+      sortList: [[5, 1]]
+    });
+    $('#address').keyup(enableStartCaseForm);
+    $('#address').bind('paste', enableStartCaseForm);
+    $('#start-new-case-form').submit(function() {
+      if ($('#start-new-case-button').button("option", "disabled")) {
+        return false;
+      }
+    });
+  });
+</script>
+{% endblock %}
+{% block title %}
+<h1>My Permit Applications</h1>
+{% endblock %}
+{% block content %}
+<p>
+  As a solar permit applicant, you can start new cases, submit a case for
+  approval, comment and resubmit as necesary until your case is
+  eventually approved by {{ main.jurisdiction|e }}.
+</p>
+
+<div class="panel">
+  <form id="start-new-case-form" action="/case/create" method="GET">
+  <div class="start-description">
+    To start a new case, first enter an address in {{ main.jurisdiction|e }}
+  like <b>123 Elm Street</b>.
+  It's not necessary to add city/state/zip portion.
+  </div>
+  <input type="text" id="address" name="address">
+  <input type="submit" id="start-new-case-button" class="button" disabled
+	 value="Start a new Case">
+  </form>
+</div>
+
+<div id="cases-in-progress" class="panel full-width">
+  You have {{ cases|length }} case{% if cases|length - 1 %}s{% endif %}.
+
+  {% if cases %}
+  <table class="tablesorter" id="cases">
+    <thead>
+      <tr>
+	<th>
+	  Case Name
+	</th>
+	<th>
+	  Creation Date
+	</th>
+	<th>
+	  Status
+	</th>
+	<th>
+	  Latest Action
+	</th>
+	<th>
+	  by
+	</th>
+	<th>
+	  when
+	</th>
+	<th>
+	</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for case in cases %}
+      <tr>
+	<td>
+	  {{ case.address|e }}
+	</td>
+	<td>
+	  {{ case.creation_date|e }}
+	</td>
+	<td>
+	  {{ case.visible_state|e }}
+	</td>
+	<td>
+	  {{ case.latest_action.action|e }}
+	</td>
+	<td>
+	  {{ case.latest_action.actor.email|e }}
+	  ({{ case.latest_action.actor.role|e }})
+	</td>
+	<td>
+	  <span class="tablesorthack">
+	    {{ case.latest_action.timestamp.isoformat()|e }}
+	  </span>
+	  {% if case.last_modified.days == 0 %}
+	  {% if case.last_modified.seconds < 7200 %}
+	  {{ case.last_modified.seconds // 60 }} minutes ago
+	  {% else %}
+	  {{ case.last_modified.seconds // 3600 }} hours ago
+	  {% endif %}
+	  {% elif case.last_modified.days == 1 %}
+	  {{ case.last_modified.days|e }} one day ago
+	  {% else %}
+	  {{ case.last_modified.days|e }} days ago
+	  {% endif %}
+	</td>
+	<td>
+	  <a href="/case/details/{{ case.key().id() }}" class="button">
+	    Details
+	  </a>
+	</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</div>
+{% endblock %}
