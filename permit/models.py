@@ -51,6 +51,15 @@ PURPOSES = (
     )
 
 
+class ModelEncoder(simplejson.JSONEncoder):
+    def default(self, obj):
+        """Allow JSON encoding of a db.Model instance."""
+	try:
+	    return obj.json()
+	except (AttributeError, TypeError):
+            return simplejson.JSONEncoder.default(self, obj)
+
+
 class User(db.Model):
     """A user of this permiting application."""
     # TODO: add authentication mechanisms / tokens
@@ -59,6 +68,10 @@ class User(db.Model):
     # application logic ensures a role gets assigned when a new user logs in
     # for the first time, but the User object is first created w/o a role
     role = db.StringProperty(choices=USER_ROLES, required=False)
+
+    def json(self):
+        """Return JSON-serializable form."""
+	return {'cls': 'User', 'email': self.email, 'role': self.role}
 
     @classmethod
     def get_by_email(cls, email):
@@ -85,6 +98,11 @@ class Case(db.Model):
     creation_date = db.DateProperty(required=True, auto_now_add=True)
     owner = db.ReferenceProperty(User, required=True)
     state = db.StringProperty(required=True, choices=CASE_STATES.values())
+
+    def json(self):
+        """Return JSON-serializable form."""
+	return {'cls': 'Case', 'address': self.address,
+	        'owner': self.owner.json(), 'state': self.state}
 
     @classmethod
     def query_by_owner(cls, user):
@@ -203,12 +221,26 @@ class CaseAction(db.Model):
     upload = blobstore.BlobReferenceProperty(required=False)
     timestamp = db.DateTimeProperty(auto_now_add=True, required=True)
 
+    def json(self):
+        """Return JSON-serializable form."""
+	d = {'cls': 'Action', 'case': self.case.json(), 'actor': self.actor.json()}
+	if self.purpose:
+	    d['purpose'] = self.purpose
+	if self.notes:
+	    d['notes'] = self.notes
+	if self.upload:
+	    d['upload'] = str(self.upload.key())
+	d['timestamp'] = self.timestamp.isoformat()
+	return d
+
     @classmethod
     def make(cls, **k):
 	"""Create and put an action, and log information about it."""
 	# TODO: send info about the action to the latrop
         logging.info('********** ')
         logging.info('********** NEW ACTION: %s', k)
+        logging.info('********** JSON: %r',
+	             simplejson.dumps(k, skipkeys=True, cls=ModelEncoder))
         logging.info('********** ')
         action = cls(**k)
 	action.put()

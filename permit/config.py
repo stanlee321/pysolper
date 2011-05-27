@@ -6,5 +6,6 @@ config['tipfy.sessions'] = {
     }
 config['main'] = {
     'jurisdiction': 'City of Light',
+    'latrop': 'localhost:8081/action',
     }
 
