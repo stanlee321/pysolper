@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}
+<h1>Email Notification Settings</h1>
+{% endblock %}
+{% block content %}
+<p>
+  Send email to {{ user.email }} about the permit application for
+  {{ case.address }} upon the following events:
+</p>
+
+<div id="email-notifications" class="panel">
+  <form action="/case/emailschange/{{ case.key().id() }}">
+      <ul>
+      {% for act in actions %}
+          <li> <input type=checkbox name={{ act }}
+	       {%if notif[act]%}checked{%endif%}>
+	       {{ act }}
+      {% endfor %}
+      </ul>
+      <input type="Submit" class="button" value="Change Settings">
+  </form>
+</div>
+{% endblock %}

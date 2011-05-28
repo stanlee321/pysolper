@@ -47,6 +47,12 @@ APPLICANT_EDITABLE = set(CASE_STATES[x]
 CASE_ACTIONS = ('Create', 'Update', 'Submit',
                 'Review', 'Reassign', 'Comment', 'Approve', 'Deny')
 
+# the kind of actions that trigger email to the applicant
+NOTIFIABLE_ACTIONS = ('Review', 'Reassign', 'Comment', 'Approve', 'Deny')
+
+# the kind of actions for which email notificatio defaults to "on"
+DEFAULT_NOTIFIED_ACTIONS = ('Comment', 'Approve', 'Deny')
+
 # documents an applicant must upload to submit a case for approver review
 PURPOSES = (
     'Site Diagram',
@@ -140,6 +146,8 @@ class Case(db.Model):
         case = cls(state=CASE_STATES['incomplete'], owner=owner, **k)
         case.put()
         CaseAction.make(action='Create', case=case, actor=owner)
+	for action in DEFAULT_NOTIFIED_ACTIONS:
+	    EmailNotification.set_on(case, action, owner.email)
         return case
 
     def submit(self, actor, notes):
@@ -253,10 +261,15 @@ class CaseAction(db.Model):
 	juris = config.config['main']['jurisdiction']
 	query = urllib.urlencode({'juris': juris, 'msg': msg})
 	url = urlparse.urlunparse(('http', latrop_host, '/action', '', query, ''))
-	result = urlfetch.fetch(url)
-	status = result.status_code
-	if status != 200:
-	    logging.warn('Status %s sending info to %s', status, latrop_host)
+        try:
+	    result = urlfetch.fetch(url)
+	    status = result.status_code
+	    if status != 200:
+	        logging.warn('Status %s sending info to %s', status, latrop_host)
+	except urlfetch.DownloadError, e:
+	    logging.warn('Error %s sending info to %s', e, latrop_host)
+	for notif in EmailNotification.query_by_case(k['case'], k['action']):
+	    logging.info('+++ MAIL TO: %r', notif.email)
         
 
     @classmethod
@@ -289,3 +302,49 @@ class CaseAction(db.Model):
         return '/document/serve/%s/%s' % (
             urllib.quote(str(self.upload.key())),
             urllib.quote(self.upload.filename))
+
+
+class EmailNotification(db.Model):
+    """An email notification request for a case."""
+    email = db.EmailProperty(required=True)
+    case = db.ReferenceProperty(Case, required=True)
+    action = db.StringProperty(required=True, choices=CASE_ACTIONS)
+
+    def json(self):
+        """Return JSON-serializable form."""
+	d = {'cls': 'EmailNotification', 'action': self.action,
+	     'case': self.case.json(), 'email': self.email}
+	return d
+
+    @classmethod
+    def query_by_case(cls, case, action=None):
+	"""Returns a db.Query for email notifications on the given case. If
+	   action is not None, only notifications for actions of the given kind
+	   are involved.
+	"""
+        q = cls.all().filter('case = ', case)
+	if action is not None:
+	    q.filter('action = ', action)
+	return q
+
+    @classmethod
+    def set_on(cls, case, action, email):
+	"""Set notification to on for the given case, action and email.
+	"""
+        for notif in cls.query_by_case(case, action):
+	    if notif.email == email:
+	        # notification already set, bail
+		return
+	# notification wasn't there, make it
+        notif = cls(email=email, case=case, action=action)
+	notif.put()
+
+    @classmethod
+    def set_off(cls, case, action, email):
+	"""Set notification to off for the given case, action and email.
+	"""
+        for notif in cls.query_by_case(case, action):
+	    if notif.email == email:
+	        # notification found, remove it
+		notif.delete()
+

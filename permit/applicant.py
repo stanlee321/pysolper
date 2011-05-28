@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """
     applicant
     ~~~~~~~~~~~~~~~~~~~~
@@ -99,4 +99,37 @@ class CaseDetailsHandler(RequestHandler, Jinja2Mixin):
         context.update(config.config)
 
         return self.render_response('case.html', **context)
+
+
+class CaseEmailsHandler(RequestHandler, Jinja2Mixin):
+    middleware = [SessionMiddleware()]
+
+    def get(self, id):
+        """Show/change email settings for a case."""
+        user = models.User.get_by_email(self.session.get('email'))
+        if not user:
+            return self.redirect('/')
+
+        case = models.Case.get_by_id(id)
+        notifications = models.EmailNotification.query_by_case(case)
+
+        notif_on = {}
+	for a in models.NOTIFIABLE_ACTIONS:
+	    notif_on[a] = False
+	for notif in notifications:
+	    if notif.email == user.email:
+	        notif_on[notif.action] = True
+
+        logging.info('notif_on: %s', notif_on)
+
+        context = {
+            'user': user,
+            'case': case,
+            'notif': notif_on,
+            'actions': models.NOTIFIABLE_ACTIONS,
+        }
+        context.update(config.config)
+
+        return self.render_response('notifications.html', **context)
+
 
