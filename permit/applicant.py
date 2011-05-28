@@ -133,3 +133,23 @@ class CaseEmailsHandler(RequestHandler, Jinja2Mixin):
         return self.render_response('notifications.html', **context)
 
 
+class EmailsChangeHandler(RequestHandler, Jinja2Mixin):
+    middleware = [SessionMiddleware()]
+
+    def get(self, id):
+        """Change email settings for a case."""
+        user = models.User.get_by_email(self.session.get('email'))
+        if not user:
+            return self.redirect('/')
+
+        case = models.Case.get_by_id(id)
+
+	for a in models.NOTIFIABLE_ACTIONS:
+	    if self.request.args.get(a) == 'on':
+	        models.EmailNotification.set_on(case, a, user.email)
+	    else:
+	        models.EmailNotification.set_off(case, a, user.email)
+
+        return self.redirect('/case/details/%s' % case.key().id())
+
+
