@@ -19,6 +19,7 @@ import urlparse
 # App Engine imports
 from google.appengine.ext import db
 from google.appengine.ext import blobstore
+from google.appengine.api import mail
 from google.appengine.api import urlfetch
 from django.utils import simplejson
 
@@ -268,8 +269,13 @@ class CaseAction(db.Model):
 	        logging.warn('Status %s sending info to %s', status, latrop_host)
 	except urlfetch.DownloadError, e:
 	    logging.warn('Error %s sending info to %s', e, latrop_host)
-	for notif in EmailNotification.query_by_case(k['case'], k['action']):
+	case, action = k['case'], k['action']
+	for notif in EmailNotification.query_by_case(case, action):
 	    logging.info('+++ MAIL TO: %r', notif.email)
+	    subject = 'Solar permit at %s: %s' % (case.address, action)
+	    mail.send_mail(sender='pysolper <pysolper@example.com>',
+	                   to=notif.email, subject=subject, body=msg)
+
         
 
     @classmethod
